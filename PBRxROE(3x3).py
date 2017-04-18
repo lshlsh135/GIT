@@ -23,8 +23,7 @@ beta_week = pd.read_pickle('beta_week')
 
 
 
-return_data = np.zeros((9,63))
-return_data = pd.DataFrame(return_data)
+
 for i in range(0,3):
     for j in range(0,3):
         locals()['return_data_{}{}'.format(i,j)] = pd.DataFrame(np.zeros((1,63)))
@@ -70,15 +69,20 @@ for n in range(3,65):
             aaa=locals()['data_name_{}{}'.format(i,j)].loc[:,[n-3,n-2]]
             bbb=pd.DataFrame(aaa.stack().value_counts())
             len2=len(bbb[bbb[0]==2])
-            locals()['data_name_{}{}'.format(i,j)].loc[len1,n-2]=(len1-len2)/len1
+            locals()['data_name_{}{}'.format(i,j)].loc[79,n-2]=(len1-len2)/len1 #turnover
                   
                   
 # 각 return_data들을 하나의 matrix로 모으기 -> 엑셀에 편하게 담기 위해서
-
-    for i in range(0,3):
-            for j in range(0,3):
-                return_data.loc[[3*(i+1)+j-3]] = locals()['return_data_{}{}'.format(i,j)].loc[[0],:].values
-            
-
+return_data = np.zeros((9,63))
+return_data = pd.DataFrame(return_data)
+for i in range(0,3):
+        for j in range(0,3):
+            return_data.loc[[3*(i+1)+j-3]] = locals()['return_data_{}{}'.format(i,j)].loc[[0],:].values
+# turnover도 모아보자     
+turnvoer_data = np.zeros((9,63))
+turnvoer_data = pd.DataFrame(turnvoer_data) 
+for i in range(0,3):
+        for j in range(0,3):
+            turnvoer_data.loc[[3*(i+1)+j-3]] = locals()['data_name_{}{}'.format(i,j)].loc[[79],:].values
 
 

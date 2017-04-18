@@ -110,4 +110,18 @@ for n in range(3,65):
                 aaa=locals()['data_name_{}{}{}'.format(i,j,z)].loc[:,[n-3,n-2]]
                 bbb=pd.DataFrame(aaa.stack().value_counts())
                 len2=len(bbb[bbb[0]==2])
-                locals()['data_name_{}{}{}'.format(i,j,z)].loc[100,n-2]=(len1-len2)/len1    
+                locals()['data_name_{}{}{}'.format(i,j,z)].loc[79,n-2]=(len1-len2)/len1    
+                      
+                      
+# turnover도 모아보자     
+
+for i in range(0,3):
+    locals()['turnover_data_{}'.format(i)] = pd.DataFrame(np.zeros((9,63)))
+    for j in range(0,3):
+        for z in range(0,3):
+            locals()['turnover_data_{}'.format(i)].loc[[3*(j+1)+z-3]] = locals()['data_name_{}{}{}'.format(i,j,z)].loc[[79],:].values
+
+
+                      
+                      
+                      
