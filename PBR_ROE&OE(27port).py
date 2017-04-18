@@ -101,7 +101,16 @@ for i in range(0,3):
                     return_final_1.iloc[j,z] = np.product(locals()['return_data_1{}{}'.format(j,z)],axis=1)
                 elif i==2:
                     return_final_2.iloc[j,z] = np.product(locals()['return_data_2{}{}'.format(j,z)],axis=1)
-# 종목 변화율
+#종목수
+for i in range(0,3):
+    locals()['stock_number_{}'.format(i)] = pd.DataFrame(np.zeros((9,63))) #주식수 세보자
+for n in range(3,66):
+   for i in range(0,3):
+       for j in range(0,3):
+           for z in range(0,3):   
+               locals()['stock_number_{}'.format(i)].loc[[3*(j+1)+z-3],[n-3]] = len(locals()['data_name_{}{}{}'.format(i,j,z)][locals()['data_name_{}{}{}'.format(i,j,z)][n-3].notnull()])
+          
+    # 종목 변화율      
 for n in range(3,65):
     for i in range(0,3):
         for j in range(0,3):
@@ -110,7 +119,6 @@ for n in range(3,65):
                 aaa=locals()['data_name_{}{}{}'.format(i,j,z)].loc[:,[n-3,n-2]]
                 bbb=pd.DataFrame(aaa.stack().value_counts())
                 len2=len(bbb[bbb[0]==2])
-                locals()['data_name_{}{}{}'.format(i,j,z)].loc[78,n-2]=len1
                 locals()['data_name_{}{}{}'.format(i,j,z)].loc[79,n-2]=(len1-len2)/len1    
                       
                       
@@ -118,12 +126,11 @@ for n in range(3,65):
 
 for i in range(0,3):
     locals()['turnover_data_{}'.format(i)] = pd.DataFrame(np.zeros((9,63)))
-    locals()['stock_number_{}'.format(i)] = pd.DataFrame(np.zeros((9,63)))
+    
     for j in range(0,3):
         for z in range(0,3):
             locals()['turnover_data_{}'.format(i)].loc[[3*(j+1)+z-3]] = locals()['data_name_{}{}{}'.format(i,j,z)].loc[[79],:].values
-            locals()['stock_number_{}'.format(i)].loc[[3*(j+1)+z-3]] = locals()['data_name_{}{}{}'.format(i,j,z)].loc[[78],:].values
-
+            
 
                       
                       
