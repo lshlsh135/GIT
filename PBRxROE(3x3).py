@@ -61,6 +61,15 @@ for i in range(0,3):
     for j in range(0,3):
         return_final.iloc[i,j] = np.product(locals()['return_data_{}{}'.format(i,j)],axis=1)   #np.product로 하면 누적, np.average
         
+#종목수
+
+stock_number = pd.DataFrame(np.zeros((9,63))) #주식수 세보자
+for n in range(3,66):
+   for i in range(0,3):
+       for j in range(0,3):
+           stock_number.loc[[3*(i+1)+j-3],[n-3]] = len(locals()['data_name_{}{}'.format(i,j)][locals()['data_name_{}{}'.format(i,j)][n-3].notnull()])
+         
+    
     # 종목 변화율
 for n in range(3,65):
     for i in range(0,3):
