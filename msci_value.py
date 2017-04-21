@@ -33,7 +33,7 @@ for i in range(0,3):
         
 for n in range(3,66):
     n=65
-    data_big = raw_data[(raw_data[n] == 1)|(raw_data[n] == 2)|(raw_data[n]==3)]
+    data_big = raw_data[(raw_data[n] == 1)]
     data_big = data_big.loc[:,[1,n]]
     data = pd.concat([data_big, size[n], equity[n], ni_12fw[n],cash_div[n]],axis=1,join='inner',ignore_index=True)
     data.columns = ['name','group','size','equity','ni_12fw','cash_div']
@@ -46,6 +46,40 @@ for n in range(3,66):
     data=data[data['1/per'].notnull()]
     data=data[data['1/div_yield'].notnull()]    # per가 NAN인 Row 제외
     data=data[data['1/div_yield']>0]
+    
+    m_pbr=np.mean(data['1/pbr'])
+    std_pbr=np.std(data['1/pbr'])
+    data1=(data['1/pbr']-m_pbr)/std_pbr
+          
+    m_per=np.mean(data['1/per'])
+    std_per=np.std(data['1/per'])
+    data2=(data['1/per']-m_per)/std_per
+          
+    m_div=np.mean(data['1/div_yield'])
+    std_div=np.std(data['1/div_yield'])
+    data3=(data['1/div_yield']-m_div)/std_div
+          
+    data=data.assign(z_score=data1+data2+data3)
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     data_size= len(data)     # Row count    
     data=data.assign(rnk_pbr=np.floor(data['pbr'].rank(method='first')/(data_size/3+1/3)))
     data=data.assign(rnk_roe=np.floor(data.groupby(['rnk_pbr'])['roe'].rank(method='first')/(data_size/9+1/3)))
