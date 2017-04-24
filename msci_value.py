@@ -32,8 +32,8 @@ for i in range(0,3):
         locals()['data_name_{}{}'.format(i,j)] = pd.DataFrame(np.zeros((80,63)))
         
 for n in range(3,66):
-    n=65
-    data_big = raw_data[(raw_data[n] == 1)]
+    n=65 #마지막 분기
+    data_big = raw_data[(raw_data[n] == 1)|(raw_data[n] == 2)|(raw_data[n] == 3)]
     data_big = data_big.loc[:,[1,n]]
     data = pd.concat([data_big, size[n], equity[n], ni_12fw[n],cash_div[n]],axis=1,join='inner',ignore_index=True)
     data.columns = ['name','group','size','equity','ni_12fw','cash_div']
@@ -42,10 +42,10 @@ for n in range(3,66):
     data['1/div_yield']=data['size']/data['cash_div']
     data = data.replace([np.inf, -np.inf],np.nan)  
     data=data[data['1/pbr'].notnull()]    # per가 NAN인 Row 제외
-    data=data[data['1/pbr']>0]
+#    data=data[data['1/pbr']>0]
     data=data[data['1/per'].notnull()]
     data=data[data['1/div_yield'].notnull()]    # per가 NAN인 Row 제외
-    data=data[data['1/div_yield']>0]
+#    data=data[data['1/div_yield']>0]
     
     m_pbr=np.mean(data['1/pbr'])
     std_pbr=np.std(data['1/pbr'])
@@ -60,12 +60,23 @@ for n in range(3,66):
     data3=(data['1/div_yield']-m_div)/std_div
           
     data=data.assign(z_score=data1+data2+data3)
-    
-    
-    
-    
-    
-    
+    data[data['name']=='삼성전자']
+    #양 끝 5% 제거
+    market_capital=np.sum(data['size'])
+    pbr_min=np.percentile(data['1/pbr'],5)
+    pbr_max=np.percentile(data['1/pbr'],95)
+    per_min=np.percentile(data['1/per'],5)
+    per_max=np.percentile(data['1/per'],95)
+    div_min=np.percentile(data['1/div_yield'],5)
+    div_max=np.percentile(data['1/div_yield'],95)
+    data_q=data[(data['1/pbr']>pbr_min)&(data['1/pbr']<pbr_max)
+    &(data['1/per']>per_min)&(data['1/per']<per_max)&(data['1/div_yield']<div_max)
+    &(data['1/div_yield']>div_min)]
+    #시가총액비중 구함 (양끝단 포함해봄)
+    data_q=data_q.assign(market_weight=data_q['size']/market_capital)
+    data_inv_pbr_mu=np.sum(data_q['1/pbr']*data_q['market_weight'])
+    data_inv_per_mu=np.sum(data_q['1/per']*data_q['market_weight'])
+    data_inv_div_mu=np.sum(data_q['1/div_yield']*data_q['market_weight'])
     
     
     
