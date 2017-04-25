@@ -23,8 +23,7 @@ beta_week = pd.read_pickle('beta_week')
 ni_12fw = pd.read_pickle('ni_12fw')
 cash_div = pd.read_pickle('cash_div')
 size_FIF=pd.read_pickle('size_FIF')  #자기주식 제외 시가총액
-size_FIF_insider=pd.read_excel('msci_rawdata.xlsx',sheetname='분기별FIF시가총액1',header=None) #대주주도 제외
-
+size_FIF_insider=pd.read_pickle('size_FIF_insider') #자기주식, 최대주주 주식 제외 시가총
 
 
 
@@ -35,11 +34,11 @@ for i in range(0,3):
         
 for n in range(3,66):
     n=65 #마지막 분기
-    data_big = raw_data[(raw_data[n] == 1)]
+    data_big = raw_data[(raw_data[n] == 3)|(raw_data[n] == 2)]
     data_big = data_big.loc[:,[1,n]]
     data = pd.concat([data_big, size_FIF_insider[n], equity[n], ni_12fw[n],cash_div[n]],axis=1,join='inner',ignore_index=True)
     data.columns = ['name','group','size','equity','ni_12fw','cash_div']
-    data['size']=data['size']/1000
+    data['size']=data['size']/1000    #size 단위 thousand
     data['1/pbr']=data['equity']/data['size']
     data['1/per']=data['ni_12fw']/data['size']
     data['1/div_yield']=data['size']/data['cash_div']
@@ -74,6 +73,9 @@ for n in range(3,66):
     per_max=np.percentile(data['1/per'],95)
     div_min=np.percentile(data['1/div_yield'],5)
     div_max=np.percentile(data['1/div_yield'],95)
+    
+    data_inv_pbr=data[(data['1/pbr']>pbr_min)&(data['1/pbr']<pbr_max)]
+    
     data_q=data[(data['1/pbr']>pbr_min)&(data['1/pbr']<pbr_max)
     &(data['1/per']>per_min)&(data['1/per']<per_max)&(data['1/div_yield']<div_max)
     &(data['1/div_yield']>div_min)]
