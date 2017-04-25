@@ -13,7 +13,7 @@ import numpy as np
 
 
 raw_data = pd.read_pickle('raw_data')
-size = pd.read_pickle('size')
+size = pd.read_pickle('size')  #시가총액
 ni = pd.read_pickle('ni')
 rtn = pd.read_pickle('rtn')
 equity = pd.read_pickle('equity')
@@ -22,7 +22,7 @@ kospi = pd.read_pickle('kospi')
 beta_week = pd.read_pickle('beta_week')
 ni_12fw = pd.read_pickle('ni_12fw')
 cash_div = pd.read_pickle('cash_div')
-
+size_FIF=pd.read_pickle('size_FIF')  #자기주식 제외 시가총액
 
 
 
@@ -35,7 +35,7 @@ for n in range(3,66):
     n=65 #마지막 분기
     data_big = raw_data[(raw_data[n] == 1)|(raw_data[n] == 2)|(raw_data[n] == 3)]
     data_big = data_big.loc[:,[1,n]]
-    data = pd.concat([data_big, size[n], equity[n], ni_12fw[n],cash_div[n]],axis=1,join='inner',ignore_index=True)
+    data = pd.concat([data_big, size_FIF[n], equity[n], ni_12fw[n],cash_div[n]],axis=1,join='inner',ignore_index=True)
     data.columns = ['name','group','size','equity','ni_12fw','cash_div']
     data['1/pbr']=data['equity']/data['size']
     data['1/per']=data['ni_12fw']/data['size']
