@@ -13,7 +13,7 @@ import numpy as np
 
 
 raw_data = pd.read_pickle('raw_data')
-size = pd.read_pickle('size')  #시가총액
+#size = pd.read_pickle('size')  #시가총액
 ni = pd.read_pickle('ni')
 rtn = pd.read_pickle('rtn')
 equity = pd.read_pickle('equity')
@@ -26,6 +26,7 @@ size_FIF=pd.read_pickle('size_FIF')  #자기주식 제외 시가총액
 
 
 
+
 for i in range(0,3):
     for j in range(0,3):
         locals()['return_data_{}{}'.format(i,j)] = pd.DataFrame(np.zeros((1,63)))
@@ -33,10 +34,11 @@ for i in range(0,3):
         
 for n in range(3,66):
     n=65 #마지막 분기
-    data_big = raw_data[(raw_data[n] == 1)|(raw_data[n] == 2)|(raw_data[n] == 3)]
+    data_big = raw_data[(raw_data[n] == 1)]
     data_big = data_big.loc[:,[1,n]]
     data = pd.concat([data_big, size_FIF[n], equity[n], ni_12fw[n],cash_div[n]],axis=1,join='inner',ignore_index=True)
     data.columns = ['name','group','size','equity','ni_12fw','cash_div']
+    data['size']=data['size']/1000
     data['1/pbr']=data['equity']/data['size']
     data['1/per']=data['ni_12fw']/data['size']
     data['1/div_yield']=data['size']/data['cash_div']
@@ -46,21 +48,23 @@ for n in range(3,66):
     data=data[data['1/per'].notnull()]
     data=data[data['1/div_yield'].notnull()]    # per가 NAN인 Row 제외
 #    data=data[data['1/div_yield']>0]
-    
-    m_pbr=np.mean(data['1/pbr'])
-    std_pbr=np.std(data['1/pbr'])
-    data1=(data['1/pbr']-m_pbr)/std_pbr
-          
-    m_per=np.mean(data['1/per'])
-    std_per=np.std(data['1/per'])
-    data2=(data['1/per']-m_per)/std_per
-          
-    m_div=np.mean(data['1/div_yield'])
-    std_div=np.std(data['1/div_yield'])
-    data3=(data['1/div_yield']-m_div)/std_div
-          
-    data=data.assign(z_score=data1+data2+data3)
-    data[data['name']=='삼성전자']
+#####################################################################   
+#    양 끝단 제거 안하고 해본
+#    m_pbr=np.mean(data['1/pbr'])
+#    std_pbr=np.std(data['1/pbr'])
+#    data1=(data['1/pbr']-m_pbr)/std_pbr
+#          
+#    m_per=np.mean(data['1/per'])
+#    std_per=np.std(data['1/per'])
+#    data2=(data['1/per']-m_per)/std_per
+#          
+#    m_div=np.mean(data['1/div_yield'])
+#    std_div=np.std(data['1/div_yield'])
+#    data3=(data['1/div_yield']-m_div)/std_div
+#          
+#    data=data.assign(z_score=data1+data2+data3)
+#    data[data['name']=='삼성전자']
+######################################################################
     #양 끝 5% 제거
     market_capital=np.sum(data['size'])
     pbr_min=np.percentile(data['1/pbr'],5)
@@ -72,15 +76,22 @@ for n in range(3,66):
     data_q=data[(data['1/pbr']>pbr_min)&(data['1/pbr']<pbr_max)
     &(data['1/per']>per_min)&(data['1/per']<per_max)&(data['1/div_yield']<div_max)
     &(data['1/div_yield']>div_min)]
-    #시가총액비중 구함 (양끝단 포함해봄)
+    #시가총액비중 구함 (양끝단  5% 제거)
     data_q=data_q.assign(market_weight=data_q['size']/market_capital)
-    data_inv_pbr_mu=np.sum(data_q['1/pbr']*data_q['market_weight'])
-    data_inv_per_mu=np.sum(data_q['1/per']*data_q['market_weight'])
-    data_inv_div_mu=np.sum(data_q['1/div_yield']*data_q['market_weight'])
+    mu_inv_pbr=np.sum(data_q['1/pbr']*data_q['market_weight'])
+    mu_inv_per=np.sum(data_q['1/per']*data_q['market_weight'])
+    mu_inv_div=np.sum(data_q['1/div_yield']*data_q['market_weight'])
     
+    std_inv_pbr=np.sqrt(np.square(data_q['1/pbr']-mu_inv_pbr)*data_q['market_weight'])
+    std_inv_per=np.sqrt(np.square(data_q['1/per']-mu_inv_per)*data_q['market_weight'])
+    std_inv_div=np.sqrt(np.square(data_q['1/div_yield']-mu_inv_div)*data_q['market_weight'])
     
-    
-    
+    data1=(data_q['1/pbr']-mu_inv_pbr)/std_inv_pbr
+    data2=(data_q['1/per']-mu_inv_per)/std_inv_per
+    data3=(data_q['1/div_yield']-mu_inv_div)/std_inv_div
+          
+    data_q=data_q.assign(z_score=data1+data2+data3)
+    data_q[data_q['name']=='삼성전자']
     
     
     
