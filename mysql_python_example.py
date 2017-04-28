@@ -50,5 +50,11 @@ if __name__ == '__main__':
     connect()
     
 #==============================================================================
-#  
+#  https://planetsantosh.wordpress.com/2015/04/19/import-excel-to-mysql-using-python/
 #==============================================================================
+import xlrd
+import mysql.connector
+
+book = xlrd.open_workbook('msci_rawdata.xlsx')
+
+conn = mysql.connector.connect(host='localhost',database='classicmodels',user='root',password='22tkdgns@@')
