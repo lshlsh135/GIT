@@ -21,24 +21,30 @@ curs.execute(sql)  #실행!!
 #==============================================================================
 # table 생성
 #==============================================================================
-import csv
 import pandas as pd
 import mysql.connector
-import sqlite3
 from sqlalchemy import create_engine
-#database 입력 했음
-samsung =  mysql.connector.connect(host='localhost',database='test',user='root',password='22tkdgns@@') 
-curs = samsung.cursor()  #samsung에 cursor을 생성하고 그걸 curs라고 하자
-sql = """CREATE TABLE SAMSUNG (
-            DATE INT,
-            z FLOAT,
-            a FLOAT,
-            b FLOAT,
-            c FLOAT)"""
 
-curs.execute(sql)
 ### 이거로 엔진 설치하고 하니깐 존나 테이블로 받아옴 개 행복
 engine = create_engine('mysql+mysqlconnector://root:22tkdgns@@@localhost/test')
+# csv를 읽어올때 한글이 primary key라면 encoding = 'cp949'를 넣어줘야함 ㅎㅎㅎㅎ
+csv_data = pd.read_csv('mysql_samsung.csv',encoding='CP949')   
+csv_data.to_sql('samsung',engine, if_exists = 'replace')
 
-csv_data = pd.read_csv('mysql_samsung.csv')
-csv_data.to_sql('samgsung1',engine, if_exists = 'replace')
+#==============================================================================
+# csv - > table 만든거를 다시 pandas dataFrame으로, 다시 Table로 가능
+#==============================================================================
+import mysql.connector
+import pandas as pd
+from sqlalchemy import create_engine
+
+
+engine = create_engine('mysql+mysqlconnector://root:22tkdgns@@@localhost/test')
+sql = 'select * from raw_data' 
+#table에 있는 data를 pandas dataframe type으로 바꾸는 함수 : pd.read_sql
+#그런데 여기서도 sqlalchemy의 engine이 쓰임 ;;
+samsung1 = pd.read_sql(sql,engine)
+a=samsung1.iloc[:,[1,2,3,4]]
+#DataFrame 을 다시 table로 저장도 가능
+a.to_sql('a',engine, if_exists = 'replace')
+
