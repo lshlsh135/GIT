@@ -35,14 +35,14 @@ size_FIF_insider=pd.read_pickle('size_FIF_insider') #자기주식, 최대주주 
 #size_FIF_wisefn.to_pickle('size_FIF_wisefn')
 size_FIF_wisefn=pd.read_pickle('size_FIF_wisefn') #시가총액
 
-return_data = np.zeros((5,60))
+return_data = np.zeros((5,63))
 return_data = pd.DataFrame(return_data)
-data_name=pd.DataFrame(np.zeros((500,60)))
-for n in range(3,63):
+data_name=pd.DataFrame(np.zeros((500,63)))
+for n in range(3,66):
     #65마지막 분기
     data_big = raw_data[(raw_data[n] == 1)|(raw_data[n] == 2)]
     data_big = data_big.loc[:,[1,n]]
-    data = pd.concat([data_big, size_FIF_wisefn[n], equity[n], ni[n+4],cash_div[n],size[n]],axis=1,join='inner',ignore_index=True)
+    data = pd.concat([data_big, size_FIF_wisefn[n], equity[n], ni[n+1],cash_div[n],size[n]],axis=1,join='inner',ignore_index=True)
     data.columns = ['name','group','size_FIF_wisefn','equity','ni_12fw','cash_div','size']
     # per, pbr, div_yield 구할때는 전체 시가총액을 사용,
     # 시총비중 구할떄는 free-float
@@ -131,7 +131,7 @@ for n in range(3,63):
     return_data.iloc[0,n-3]=np.mean(result[15])
     data_name[n-3]=result[0].reset_index(drop=True)
 #    return_data.iloc[0,n-3]=np.sum(result[13]*result[14])    
-    if n == 62 : 
+    if n == 65 : 
         pass
     return_final=np.product(return_data,axis=1)
 
