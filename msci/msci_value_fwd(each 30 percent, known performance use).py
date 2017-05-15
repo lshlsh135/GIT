@@ -315,7 +315,7 @@ return_data = np.zeros((5,63))
 return_data = pd.DataFrame(return_data)
 data_name=pd.DataFrame(np.zeros((500,63)))
 for n in range(3,66):
-    n=65#65마지막 분기
+    #65마지막 분기
     data_big = raw_data[(raw_data[n] == 1)]
     data_big = data_big.loc[:,[1,n]]
     data = pd.concat([data_big, size_FIF_wisefn[n], equity[n], ni[n+1],cash_div[n],size[n]],axis=1,join='inner',ignore_index=True)
@@ -380,16 +380,19 @@ for n in range(3,66):
     
     # np.nanmean : nan 값 포함해서 평균 내기!!
     result = result.assign(z_score=np.nanmean(result.iloc[:,[10,11,12]],axis=1))
-    
-    result = pd.concat([result,result.iloc[[97,98],:]],axis=0)
-    
-    #중복 rows 1개 빼고 다 제거 
-    result = result.drop_duplicates()
+    result_temp = result
+
     
     # z_score > 0 인것이 가치주라고 msci에서 하고있음
     result =result[result['z_score'].notnull()]
     z_score_max=np.percentile(result['z_score'],70)
     result =result[result['z_score']>z_score_max]
+    
+    result = pd.concat([result,pd.DataFrame(result_temp.loc[390,:]).transpose()],axis=0)
+    
+    #중복 rows 1개 빼고 다 제거 
+    result = result.drop_duplicates()
+    
     
     market_capital=np.sum(result['size_FIF_wisefn'])
     result=result.assign(market_weight2=result['size_FIF_wisefn']/market_capital)
