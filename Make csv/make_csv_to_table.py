@@ -26,7 +26,7 @@ curs.execute(sql)  #실행!!
 
 
 #==============================================================================
-# table 생성
+# fns_jd_example table 생성
 #==============================================================================
 import pandas as pd
 import mysql.connector
@@ -37,6 +37,19 @@ engine = create_engine('mysql+mysqlconnector://root:22tkdgns@@@localhost/test')
 # csv를 읽어올때 한글이 primary key라면 encoding = 'cp949'를 넣어줘야함 ㅎㅎㅎㅎ
 csv_data = pd.read_csv('dg_csv_example.csv',encoding='CP949')   
 csv_data.to_sql('fns_jd_example',engine, if_exists = 'replace')
+
+#==============================================================================
+# big_size table 생성
+#==============================================================================
+import pandas as pd
+import mysql.connector
+from sqlalchemy import create_engine
+
+### 이거로 엔진 설치하고 하니깐 존나 테이블로 받아옴 개 행복
+engine = create_engine('mysql+mysqlconnector://root:22tkdgns@@@localhost/test')
+# csv를 읽어올때 한글이 primary key라면 encoding = 'cp949'를 넣어줘야함 ㅎㅎㅎㅎ
+csv_data = pd.read_csv('big_size.csv',encoding='CP949')   
+csv_data.to_sql('big_size',engine, if_exists = 'replace')
 
 #==============================================================================
 # csv - > table 만든거를 다시 pandas dataFrame으로, 다시 Table로 가능
