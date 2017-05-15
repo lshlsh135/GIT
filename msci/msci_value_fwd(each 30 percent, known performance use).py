@@ -19,8 +19,9 @@ Created on Mon May  8 13:34:29 2017
 
 #forward 를 미리 안다고 가정해서 다음기 당기순이익을 받아서 사용
 #==============================================================================
-# MSCI Value = > Trailing PBR 역수, PBR 12m forward 역수, 배당수익률
+# MSCI Value = > Trailing PBR 역수, PBR 12m forward 역수, 배당수익률 역수
 # 양끝 5% 제거, pbr, per, div 각각 독립적으로 z-score 구해서 산술평균
+# 각 size 별 z_score 상위 30 % 골라서 투자
 #==============================================================================
 import pandas as pd
 import numpy as np
@@ -47,7 +48,7 @@ return_data = pd.DataFrame(return_data)
 data_name=pd.DataFrame(np.zeros((500,63)))
 for n in range(3,66):
     #65마지막 분기
-    data_big = raw_data[(raw_data[n] == 1)|(raw_data[n] == 2)]
+    data_big = raw_data[(raw_data[n] == 1)]
     data_big = data_big.loc[:,[1,n]]
     data = pd.concat([data_big, size_FIF_wisefn[n], equity[n], ni[n+1],cash_div[n],size[n]],axis=1,join='inner',ignore_index=True)
     data.columns = ['name','group','size_FIF_wisefn','equity','ni_12fw','cash_div','size']
@@ -66,23 +67,6 @@ for n in range(3,66):
     data_pbr = data[data['1/pbr'].notnull()]
     data_div = data[data['1/div_yield'].notnull()]
 
-#####################################################################   
-#    양 끝단 제거 안하고 해본
-#    m_pbr=np.mean(data['1/pbr'])
-#    std_pbr=np.std(data['1/pbr'])
-#    data1=(data['1/pbr']-m_pbr)/std_pbr
-#          
-#    m_per=np.mean(data['1/per'])
-#    std_per=np.std(data['1/per'])
-#    data2=(data['1/per']-m_per)/std_per
-#          
-#    m_div=np.mean(data['1/div_yield'])
-#    std_div=np.std(data['1/div_yield'])
-#    data3=(data['1/div_yield']-m_div)/std_div
-#          
-#    data=data.assign(z_score=data1+data2+data3)
-#    data[data['name']=='삼성전자']
-######################################################################
     #양 끝 5% 구함
 #    market_capital=np.sum(data['size'])
     pbr_min=np.percentile(data_pbr['1/pbr'],5)
@@ -130,11 +114,166 @@ for n in range(3,66):
     result = result.assign(z_score=np.nanmean(result.iloc[:,[10,11,12]],axis=1))
     
     # z_score > 0 인것이 가치주라고 msci에서 하고있음
-    result =result[result['z_score']>0]
+    result =result[result['z_score'].notnull()]
+    z_score_max=np.percentile(result['z_score'],70)
+    result =result[result['z_score']>z_score_max]
     
     market_capital=np.sum(result['size_FIF_wisefn'])
     result=result.assign(market_weight2=result['size_FIF_wisefn']/market_capital)
-    result = pd.concat([result,rtn[n-3]],axis=1,join='inner',ignore_index=True) #수익률 매칭
+    result1 = pd.concat([result,rtn[n-3]],axis=1,join='inner',ignore_index=True) #수익률 매칭
+    
+    data_big = raw_data[(raw_data[n] == 2)]
+    data_big = data_big.loc[:,[1,n]]
+    data = pd.concat([data_big, size_FIF_wisefn[n], equity[n], ni[n+1],cash_div[n],size[n]],axis=1,join='inner',ignore_index=True)
+    data.columns = ['name','group','size_FIF_wisefn','equity','ni_12fw','cash_div','size']
+    # per, pbr, div_yield 구할때는 전체 시가총액을 사용,
+    # 시총비중 구할떄는 free-float
+    data['size_FIF_wisefn']=data['size_FIF_wisefn']/1000    #size 단위 thousand
+    data['1/pbr']=data['equity']/data['size']
+    data['1/per']=data['ni_12fw']/data['size']
+    data['1/div_yield']=data['size']/data['cash_div']
+    
+    # inf, -inf 값들을 NAN 값으로 변경 (그래야 한번에 제거 가능)
+    data = data.replace([np.inf, -np.inf],np.nan)  
+    
+    # Null 값 제거
+    data_per = data[data['1/per'].notnull()]
+    data_pbr = data[data['1/pbr'].notnull()]
+    data_div = data[data['1/div_yield'].notnull()]
+
+    #양 끝 5% 구함
+#    market_capital=np.sum(data['size'])
+    pbr_min=np.percentile(data_pbr['1/pbr'],5)
+    pbr_max=np.percentile(data_pbr['1/pbr'],95)
+    per_min=np.percentile(data_per['1/per'],5)
+    per_max=np.percentile(data_per['1/per'],95)
+    div_min=np.percentile(data_div['1/div_yield'],5)
+    div_max=np.percentile(data_div['1/div_yield'],95)
+
+    
+    #양끝단  5% 제거
+    data_pbr = data_pbr[(data_pbr['1/pbr']>pbr_min)&(data_pbr['1/pbr']<pbr_max)]
+    data_per = data_per[(data_per['1/per']>per_min)&(data_per['1/per']<per_max)]
+    data_div = data_div[(data_div['1/div_yield']>div_min)&(data_div['1/div_yield']<div_max)]
+
+    # 시가총액비중 구함 
+    data_pbr_cap = np.sum(data_pbr['size_FIF_wisefn'])
+    data_per_cap = np.sum(data_per['size_FIF_wisefn'])
+    data_div_cap = np.sum(data_div['size_FIF_wisefn'])
+
+    data_pbr = data_pbr.assign(market_weight=data_pbr['size_FIF_wisefn']/data_pbr_cap)
+    data_per = data_per.assign(market_weight=data_per['size_FIF_wisefn']/data_per_cap)
+    data_div = data_div.assign(market_weight=data_div['size_FIF_wisefn']/data_div_cap)
+    
+    # 시총가중 평균 
+    mu_inv_pbr=np.sum(data_pbr['1/pbr']*data_pbr['market_weight'])
+    mu_inv_per=np.sum(data_per['1/per']*data_per['market_weight'])
+    mu_inv_div=np.sum(data_div['1/div_yield']*data_div['market_weight'])
+    
+    # 시총 가중 표준편자
+    std_inv_pbr=np.sqrt(np.sum(np.square(data_pbr['1/pbr']-mu_inv_pbr)*data_pbr['market_weight']))
+    std_inv_per=np.sqrt(np.sum(np.square(data_per['1/per']-mu_inv_per)*data_per['market_weight']))
+    std_inv_div=np.sqrt(np.sum(np.square(data_div['1/div_yield']-mu_inv_div)*data_div['market_weight']))
+    
+    data1=(data_pbr['1/pbr']-mu_inv_pbr)/std_inv_pbr
+    data1.name= 'pbr_z'
+    data2=(data_per['1/per']-mu_inv_per)/std_inv_per
+    data2.name= 'per_z'
+    data3=(data_div['1/div_yield']-mu_inv_div)/std_inv_div
+    data3.name= 'div_z'
+          
+    result = pd.concat([data, data1, data2, data3], axis = 1)
+    
+    # np.nanmean : nan 값 포함해서 평균 내기!!
+    result = result.assign(z_score=np.nanmean(result.iloc[:,[10,11,12]],axis=1))
+    
+    # z_score > 0 인것이 가치주라고 msci에서 하고있음
+    result =result[result['z_score'].notnull()]
+    z_score_max=np.percentile(result['z_score'],70)
+    result =result[result['z_score']>z_score_max]
+    
+    market_capital=np.sum(result['size_FIF_wisefn'])
+    result=result.assign(market_weight2=result['size_FIF_wisefn']/market_capital)
+    result2 = pd.concat([result,rtn[n-3]],axis=1,join='inner',ignore_index=True) #수익률 매칭                      
+                       
+    
+    data_big = raw_data[(raw_data[n] == 3)]
+    data_big = data_big.loc[:,[1,n]]
+    data = pd.concat([data_big, size_FIF_wisefn[n], equity[n], ni[n+1],cash_div[n],size[n]],axis=1,join='inner',ignore_index=True)
+    data.columns = ['name','group','size_FIF_wisefn','equity','ni_12fw','cash_div','size']
+    # per, pbr, div_yield 구할때는 전체 시가총액을 사용,
+    # 시총비중 구할떄는 free-float
+    data['size_FIF_wisefn']=data['size_FIF_wisefn']/1000    #size 단위 thousand
+    data['1/pbr']=data['equity']/data['size']
+    data['1/per']=data['ni_12fw']/data['size']
+    data['1/div_yield']=data['size']/data['cash_div']
+    
+    # inf, -inf 값들을 NAN 값으로 변경 (그래야 한번에 제거 가능)
+    data = data.replace([np.inf, -np.inf],np.nan)  
+    
+    # Null 값 제거
+    data_per = data[data['1/per'].notnull()]
+    data_pbr = data[data['1/pbr'].notnull()]
+    data_div = data[data['1/div_yield'].notnull()]
+
+    #양 끝 5% 구함
+#    market_capital=np.sum(data['size'])
+    pbr_min=np.percentile(data_pbr['1/pbr'],5)
+    pbr_max=np.percentile(data_pbr['1/pbr'],95)
+    per_min=np.percentile(data_per['1/per'],5)
+    per_max=np.percentile(data_per['1/per'],95)
+    div_min=np.percentile(data_div['1/div_yield'],5)
+    div_max=np.percentile(data_div['1/div_yield'],95)
+
+    
+    #양끝단  5% 제거
+    data_pbr = data_pbr[(data_pbr['1/pbr']>pbr_min)&(data_pbr['1/pbr']<pbr_max)]
+    data_per = data_per[(data_per['1/per']>per_min)&(data_per['1/per']<per_max)]
+    data_div = data_div[(data_div['1/div_yield']>div_min)&(data_div['1/div_yield']<div_max)]
+
+    # 시가총액비중 구함 
+    data_pbr_cap = np.sum(data_pbr['size_FIF_wisefn'])
+    data_per_cap = np.sum(data_per['size_FIF_wisefn'])
+    data_div_cap = np.sum(data_div['size_FIF_wisefn'])
+
+    data_pbr = data_pbr.assign(market_weight=data_pbr['size_FIF_wisefn']/data_pbr_cap)
+    data_per = data_per.assign(market_weight=data_per['size_FIF_wisefn']/data_per_cap)
+    data_div = data_div.assign(market_weight=data_div['size_FIF_wisefn']/data_div_cap)
+    
+    # 시총가중 평균 
+    mu_inv_pbr=np.sum(data_pbr['1/pbr']*data_pbr['market_weight'])
+    mu_inv_per=np.sum(data_per['1/per']*data_per['market_weight'])
+    mu_inv_div=np.sum(data_div['1/div_yield']*data_div['market_weight'])
+    
+    # 시총 가중 표준편자
+    std_inv_pbr=np.sqrt(np.sum(np.square(data_pbr['1/pbr']-mu_inv_pbr)*data_pbr['market_weight']))
+    std_inv_per=np.sqrt(np.sum(np.square(data_per['1/per']-mu_inv_per)*data_per['market_weight']))
+    std_inv_div=np.sqrt(np.sum(np.square(data_div['1/div_yield']-mu_inv_div)*data_div['market_weight']))
+    
+    data1=(data_pbr['1/pbr']-mu_inv_pbr)/std_inv_pbr
+    data1.name= 'pbr_z'
+    data2=(data_per['1/per']-mu_inv_per)/std_inv_per
+    data2.name= 'per_z'
+    data3=(data_div['1/div_yield']-mu_inv_div)/std_inv_div
+    data3.name= 'div_z'
+          
+    result = pd.concat([data, data1, data2, data3], axis = 1)
+    
+    # np.nanmean : nan 값 포함해서 평균 내기!!
+    result = result.assign(z_score=np.nanmean(result.iloc[:,[10,11,12]],axis=1))
+    
+    # z_score > 0 인것이 가치주라고 msci에서 하고있음
+    result =result[result['z_score'].notnull()]
+    z_score_max=np.percentile(result['z_score'],70)
+    result =result[result['z_score']>z_score_max]
+    
+    market_capital=np.sum(result['size_FIF_wisefn'])
+    result=result.assign(market_weight2=result['size_FIF_wisefn']/market_capital)
+    result3 = pd.concat([result,rtn[n-3]],axis=1,join='inner',ignore_index=True) #수익률 매칭  
+                     
+                       
+    result = pd.concat([result1,result2,result3])              
+                       
     return_data.iloc[0,n-3]=np.mean(result[15])
     data_name[n-3]=result[0].reset_index(drop=True)
 #    return_data.iloc[0,n-3]=np.sum(result[13]*result[14])    

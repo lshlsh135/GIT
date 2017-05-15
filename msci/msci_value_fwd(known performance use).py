@@ -40,7 +40,7 @@ return_data = pd.DataFrame(return_data)
 data_name=pd.DataFrame(np.zeros((500,63)))
 for n in range(3,66):
     #65마지막 분기
-    data_big = raw_data[(raw_data[n] == 1)|(raw_data[n] == 2)]
+    data_big = raw_data[(raw_data[n] == 1)|(raw_data[n] == 2)|(raw_data[n] == 3)]
     data_big = data_big.loc[:,[1,n]]
     data = pd.concat([data_big, size_FIF_wisefn[n], equity[n], ni[n+1],cash_div[n],size[n]],axis=1,join='inner',ignore_index=True)
     data.columns = ['name','group','size_FIF_wisefn','equity','ni_12fw','cash_div','size']
