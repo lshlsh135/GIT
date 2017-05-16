@@ -118,8 +118,7 @@ for n in range(3,66):
     z_score_max=np.percentile(result['z_score'],70)
     result =result[result['z_score']>z_score_max]
     
-    market_capital=np.sum(result['size_FIF_wisefn'])
-    result=result.assign(market_weight2=result['size_FIF_wisefn']/market_capital)
+
     result1 = pd.concat([result,rtn[n-3]],axis=1,join='inner',ignore_index=True) #수익률 매칭
     
     data_big = raw_data[(raw_data[n] == 2)]
@@ -192,8 +191,7 @@ for n in range(3,66):
     z_score_max=np.percentile(result['z_score'],70)
     result =result[result['z_score']>z_score_max]
     
-    market_capital=np.sum(result['size_FIF_wisefn'])
-    result=result.assign(market_weight2=result['size_FIF_wisefn']/market_capital)
+
     result2 = pd.concat([result,rtn[n-3]],axis=1,join='inner',ignore_index=True) #수익률 매칭                      
                        
     
@@ -267,14 +265,18 @@ for n in range(3,66):
     z_score_max=np.percentile(result['z_score'],70)
     result =result[result['z_score']>z_score_max]
     
-    market_capital=np.sum(result['size_FIF_wisefn'])
-    result=result.assign(market_weight2=result['size_FIF_wisefn']/market_capital)
+    
     result3 = pd.concat([result,rtn[n-3]],axis=1,join='inner',ignore_index=True) #수익률 매칭  
                      
                        
-    result = pd.concat([result1,result2,result3])              
-                       
-    return_data.iloc[0,n-3]=np.mean(result[15])
+    result = pd.concat([result1,result2,result3])
+    market_capital=np.sum(result[2])
+    result=result.assign(market_weight2=result[2]/market_capital)              
+     
+#동일가중                  
+#    return_data.iloc[0,n-3]=np.mean(result[14])
+#시총가중    
+    return_data.iloc[0,n-3]=np.sum(result[14]*result['market_weight2'])
     data_name[n-3]=result[0].reset_index(drop=True)
 #    return_data.iloc[0,n-3]=np.sum(result[13]*result[14])    
     if n == 65 : 
@@ -394,8 +396,7 @@ for n in range(3,66):
     result = result.drop_duplicates()
     
     
-    market_capital=np.sum(result['size_FIF_wisefn'])
-    result=result.assign(market_weight2=result['size_FIF_wisefn']/market_capital)
+
     result1 = pd.concat([result,rtn[n-3]],axis=1,join='inner',ignore_index=True) #수익률 매칭
     
     data_big = raw_data[(raw_data[n] == 2)]
@@ -468,8 +469,7 @@ for n in range(3,66):
     z_score_max=np.percentile(result['z_score'],70)
     result =result[result['z_score']>z_score_max]
     
-    market_capital=np.sum(result['size_FIF_wisefn'])
-    result=result.assign(market_weight2=result['size_FIF_wisefn']/market_capital)
+
     result2 = pd.concat([result,rtn[n-3]],axis=1,join='inner',ignore_index=True) #수익률 매칭                      
                        
     
@@ -543,14 +543,18 @@ for n in range(3,66):
     z_score_max=np.percentile(result['z_score'],70)
     result =result[result['z_score']>z_score_max]
     
-    market_capital=np.sum(result['size_FIF_wisefn'])
-    result=result.assign(market_weight2=result['size_FIF_wisefn']/market_capital)
+
     result3 = pd.concat([result,rtn[n-3]],axis=1,join='inner',ignore_index=True) #수익률 매칭  
                      
                        
-    result = pd.concat([result1,result2,result3])              
-                       
-    return_data.iloc[0,n-3]=np.mean(result[15])
+    result = pd.concat([result1,result2,result3])    
+    market_capital=np.sum(result[2])
+    result=result.assign(market_weight2=result[2]/market_capital)          
+    
+    #동일가중
+#    return_data.iloc[0,n-3]=np.mean(result[14])
+#시총가중
+    return_data.iloc[0,n-3]=np.sum(result[14]*result['market_weight2'])
     data_name[n-3]=result[0].reset_index(drop=True)
 #    return_data.iloc[0,n-3]=np.sum(result[13]*result[14])    
     if n == 65 : 

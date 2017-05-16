@@ -19,6 +19,8 @@ Created on Mon May  8 13:34:29 2017
 @author: SH-NoteBook
 """
 
+#먼저 코스피에서 각 size 별 z_score 상위 30%가 되는 값을 골라서 코스닥에도 적용
+
 #1. 
 #2. 삼성전자 모두 포함하게.
 
@@ -32,6 +34,37 @@ Created on Mon May  8 13:34:29 2017
 #==============================================================================
 import pandas as pd
 import numpy as np
+
+
+
+#raw_data_kq = pd.read_excel('msci_rawdata_kq.xlsm',sheetname='Raw_data_kq1',header=None)
+#raw_data_kq.to_pickle('raw_Data_kq')
+#size_kq = pd.read_excel('msci_rawdata_kq.xlsm',sheetname='시가총액1',header=None)
+#size_kq.to_pickle('size_kq')
+#ni_kq = pd.read_excel('msci_rawdata_kq.xlsm',sheetname='당기순이익1',header=None)
+#ni_kq.to_pickle('ni_kq')
+#rtn_kq = pd.read_excel('msci_rawdata_kq.xlsm',sheetname='수익률1',header=None)
+#rtn_kq.to_pickle('rtn_kq')
+#equity_kq = pd.read_excel('msci_rawdata_kq.xlsm',sheetname='자본총계1',header=None)
+#equity_kq.to_pickle('equity_kq')
+#size_FIF_wisefn_kq = pd.read_excel('msci_rawdata_kq.xlsm',sheetname='유통주식수x수정주가1',header=None) # wisefn에서 산출해주는 유통비율 이용
+#size_FIF_wisefn_kq.to_pickle('size_FIF_wisefn_kq')
+
+raw_data_kq=pd.read_pickle('raw_data_kq')  # 편입시장
+size_kq = pd.read_pickle('size_kq')  #시가총액
+ni_kq = pd.read_pickle('ni_kq')  # 당기순이익
+rtn_kq = pd.read_pickle('rtn_kq')  #수익률
+equity_kq = pd.read_pickle('equity_kq')  #자본총걔
+size_FIF_wisefn_kq = pd.read_pickle('size_FIF_wisefn_kq')  #free floating 시가총액
+
+
+
+
+
+
+
+
+
 
 
 raw_data = pd.read_pickle('raw_data')
