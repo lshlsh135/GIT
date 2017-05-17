@@ -744,7 +744,7 @@ for n in range(3,66):
     result =result[result['z_score'].notnull()]
     z_score4_max=np.mean([z_score1_max,z_score2_max,z_score3_max])
     z_score_kq_max=np.percentile(result['z_score'],70)
-    result =result[result['z_score']>z_score4_max]
+    result =result[result['z_score']>z_score_kq_max]
     
 
     result4 = pd.concat([result,rtn_kq[n-3]],axis=1,join='inner',ignore_index=True) #수익률 매칭  
