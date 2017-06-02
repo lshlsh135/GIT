@@ -293,7 +293,7 @@ for n in range(3,67):
     
     # z_score > 0 인것이 가치주라고 msci에서 하고있음
     result =result[result['z_score'].notnull()]
-    z_score3_max=np.percentile(result['z_score'],78)
+    z_score3_max=np.percentile(result['z_score'],80)
     result =result[result['z_score']>z_score3_max]
     
 
