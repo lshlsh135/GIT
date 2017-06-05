@@ -72,7 +72,7 @@ return_data = np.zeros((5,64))
 return_data = pd.DataFrame(return_data)
 data_name=pd.DataFrame(np.zeros((1000,64)))
 for n in range(3,67):
-    #65마지막 분기
+    n=64#66마지막 분기
     data_big = raw_data[(raw_data[n] == 1)]
     data_big = data_big.loc[:,[1,n]]
     data = pd.concat([data_big, size_FIF_wisefn[n], equity[n], ni[n+1],cash_div[n],size[n]],axis=1,join='inner',ignore_index=True)
@@ -142,10 +142,12 @@ for n in range(3,67):
     
     # z_score > 0 인것이 가치주라고 msci에서 하고있음
     result =result[result['z_score'].notnull()]
-    z_score1_max=np.percentile(result['z_score'],50)
+    
+    #상위 65%로 결정하면 삼성전자가 n=64,65,66일때 모두 포함이 된다.
+    z_score1_max=np.percentile(result['z_score'],35)
     result =result[result['z_score']>z_score1_max]
     
-    result = pd.concat([result,pd.DataFrame(result_temp.loc[390,:]).transpose()],axis=0)
+#    result = pd.concat([result,pd.DataFrame(result_temp.loc[390,:]).transpose()],axis=0)
     
     #중복 rows 1개 빼고 다 제거 
     result = result.drop_duplicates()
@@ -318,4 +320,15 @@ for n in range(3,67):
 
     # 삼성전자가 몇분기동안 포함되었는지 확인
 np.sum(np.sum(data_name=="삼성전자"))
+
+average_return = np.mean(return_data,axis=1)
+std_return = np.std(return_data,axis=1)
+average_return/std_return
+
+
+
+
+
+
+
 
