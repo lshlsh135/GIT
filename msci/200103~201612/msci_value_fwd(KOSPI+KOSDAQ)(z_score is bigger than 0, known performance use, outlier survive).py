@@ -1,16 +1,13 @@
 # -*- coding: utf-8 -*-
 """
-Created on Mon May 29 15:14:33 2017
+Created on Mon Jun  5 15:49:00 2017
 
 @author: SH-NoteBook
 """
 
-# -*- coding: utf-8 -*-
-"""
-Created on Wed May 17 15:14:03 2017
-
-@author: SH-NoteBook
-"""
+#==============================================================================
+# z_score>0 이게 훨씬 누적수익률이 나쁘다
+#==============================================================================
 #200103~201703
 #2 삼성전자 모두 포함하게 
 #forward 를 미리 안다고 가정해서 다음기 당기순이익을 받아서 사용
@@ -145,7 +142,7 @@ for n in range(3,67):
     
     #상위 65%로 결정하면 삼성전자가 n=64,65,66일때 모두 포함이 된다.
     z_score1_max=np.percentile(result['z_score'],50)
-    result =result[result['z_score']>z_score1_max]
+    result =result[result['z_score']>0]
     
     result = pd.concat([result,pd.DataFrame(result_temp.loc[390,:]).transpose()],axis=0)
     
@@ -224,7 +221,7 @@ for n in range(3,67):
     # z_score > 0 인것이 가치주라고 msci에서 하고있음
     result =result[result['z_score'].notnull()]
     z_score2_max=np.percentile(result['z_score'],50)
-    result =result[result['z_score']>z_score2_max]
+    result =result[result['z_score']>0]
     
 
     result2 = pd.concat([result,rtn[n-3]],axis=1,join='inner',ignore_index=True) #수익률 매칭                      
@@ -296,7 +293,7 @@ for n in range(3,67):
     # z_score > 0 인것이 가치주라고 msci에서 하고있음
     result =result[result['z_score'].notnull()]
     z_score3_max=np.percentile(result['z_score'],80)
-    result =result[result['z_score']>z_score3_max]
+    result =result[result['z_score']>0]
     
 
     result3 = pd.concat([result,rtn_sum[n-3]],axis=1,join='inner',ignore_index=True) #수익률 매칭  
