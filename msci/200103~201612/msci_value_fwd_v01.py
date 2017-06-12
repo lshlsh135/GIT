@@ -85,6 +85,22 @@ for n in range(3,67):
     data_big = data_big.loc[:,[1,n]]
     data = pd.concat([data_big, size_FIF_wisefn[n], equity[n], ni[n+1],cash_div[n],size[n]],axis=1,join='inner',ignore_index=True)
     data.columns = ['name','group','size_FIF_wisefn','equity','ni_12fw','cash_div','size']
+    result_temp = data
+    samsung = pd.DataFrame(data.loc[390,:]).transpose()
+    if (np.isnan(result_temp.loc[390]['equity']))|(np.isnan(result_temp.loc[390]['ni_12fw']))|(np.isnan(result_temp.loc[390]['cash_div'])):
+        samsung = pd.DataFrame(result_temp.loc[390,:]).transpose()
+        samsung['1/pbr'] = 0
+        samsung['1/per'] = 0
+        samsung['div_yield'] = 0
+        samsung['pbr_z'] = 0
+        samsung['per_z'] = 0
+        samsung['div_z'] = 0
+        samsung['z_score'] = 0
+    
+    data = data[data['equity'].notnull()]
+    data = data[data['ni_12fw'].notnull()]
+    data = data[data['cash_div'].notnull()]
+    
     # per, pbr, div_yield 구할때는 전체 시가총액을 사용,
     # 시총비중 구할떄는 free-float
     data['size_FIF_wisefn']=data['size_FIF_wisefn']/1000    #size 단위 thousand
@@ -145,7 +161,7 @@ for n in range(3,67):
     
     # np.nanmean : nan 값 포함해서 평균 내기!!
     result = result.assign(z_score=np.nanmean(result.iloc[:,[10,11,12]],axis=1))
-    result_temp = result
+#    result_temp = result
 
     
     # z_score > 0 인것이 가치주라고 msci에서 하고있음
@@ -155,8 +171,18 @@ for n in range(3,67):
     z_score1_max=np.percentile(result['z_score'],50)
     result =result[result['z_score']>z_score1_max]
     
-    result = pd.concat([result,pd.DataFrame(result_temp.loc[390,:]).transpose()],axis=0)
     
+#    result = pd.concat([result,pd.DataFrame(result_temp.loc[390,:]).transpose()],axis=0)
+    if np.sum(result['name']=="삼성전자")!=1:
+        samsung['1/pbr'] = 0
+        samsung['1/per'] = 0
+        samsung['div_yield'] = 0
+        samsung['pbr_z'] = 0
+        samsung['per_z'] = 0
+        samsung['div_z'] = 0
+        samsung['z_score'] = 0
+        result = pd.concat([result,samsung],axis=0)
+        
     #중복 rows 1개 빼고 다 제거 
     result = result.drop_duplicates()
     
@@ -168,6 +194,10 @@ for n in range(3,67):
     data_big = data_big.loc[:,[1,n]]
     data = pd.concat([data_big, size_FIF_wisefn[n], equity[n], ni[n+1],cash_div[n],size[n]],axis=1,join='inner',ignore_index=True)
     data.columns = ['name','group','size_FIF_wisefn','equity','ni_12fw','cash_div','size']
+    
+    data = data[data['equity'].notnull()]
+    data = data[data['ni_12fw'].notnull()]
+    data = data[data['cash_div'].notnull()]
     # per, pbr, div_yield 구할때는 전체 시가총액을 사용,
     # 시총비중 구할떄는 free-float
     data['size_FIF_wisefn']=data['size_FIF_wisefn']/1000    #size 단위 thousand
@@ -253,7 +283,9 @@ for n in range(3,67):
     data = pd.concat([data1,data2],axis=0)
     data=data[data['size']>100000000000]
         
-    
+    data = data[data['equity'].notnull()]
+    data = data[data['ni_12fw'].notnull()]
+    data = data[data['cash_div'].notnull()]
     # per, pbr, div_yield 구할때는 전체 시가총액을 사용,
     # 시총비중 구할떄는 free-float
     data['size_FIF_wisefn']=data['size_FIF_wisefn']/1000    #size 단위 thousand
