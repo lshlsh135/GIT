@@ -80,6 +80,8 @@ turnover = pd.DataFrame(np.zeros((1,1)))
 return_data = np.zeros((5,64))
 return_data = pd.DataFrame(return_data)
 data_name=pd.DataFrame(np.zeros((1000,64)))
+# 매 분기 수익률을 기록하기 위해 quarter_data를 만듬
+quarter_data = pd.DataFrame(np.zeros((1000,128)))
 for n in range(3,67):
     #66마지막 분기
     data_big = raw_data[(raw_data[n] == 1)]
@@ -347,7 +349,9 @@ for n in range(3,67):
                            
                        
 #대형주+중형주+소형주+KOSDAQ                       
-    result = pd.concat([result1,result2,result3])    
+    result = pd.concat([result1,result2,result3])
+    #매 분기 수익률을 기록
+    quarter_data[[2*(n-3),2*(n-3)+1]] = result.iloc[:,[0,14]].reset_index(drop=True)
     market_capital=np.sum(result[2])
     result=result.assign(market_weight2=result[2]/market_capital)          
     
