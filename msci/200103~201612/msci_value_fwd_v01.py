@@ -37,15 +37,16 @@ import numpy as np
 #equity_kq.to_pickle('equity_kq')
 #cash_div_kq.to_pickle('cash_div_kq')
 #size_FIF_wisefn_kq.to_pickle('size_FIF_wisefn_kq')
-
-#raw_data_kq=pd.read_excel('msci_rawdata_kq.xlsm',sheetname='Raw_data_kq1',header=None)  # 편입시장
-#size_kq = pd.read_excel('msci_rawdata_kq.xlsm',sheetname='시가총액1',header=None)  #시가총액
-#ni_kq = pd.read_excel('msci_rawdata_kq.xlsm',sheetname='당기순이익1',header=None)  # 당기순이익
-#rtn_kq = pd.read_excel('msci_rawdata_kq.xlsm',sheetname='수익률1',header=None)  #수익률
-#equity_kq = pd.read_excel('msci_rawdata_kq.xlsm',sheetname='자본총계1',header=None)  #자본총걔
-#size_FIF_wisefn_kq = pd.read_excel('msci_rawdata_kq.xlsm',sheetname='유통주식수x수정주가1',header=None)  #free floating 시가총액
-#cash_div_kq = pd.read_excel('msci_rawdata_kq.xlsm',sheetname='현금배당액1',header=None)
+#raw_data_=pd.read_excel('exercise_v02.xlsx',sheetname='Raw_data1',header=None)
+#raw_data_kq=pd.read_excel('msci_rawdata_kq2.xlsm',sheetname='Raw_data_kq1',header=None)  # 편입시장
+#size_kq = pd.read_excel('msci_rawdata_kq2.xlsm',sheetname='시가총액1',header=None)  #시가총액
+#ni_kq = pd.read_excel('msci_rawdata_kq2.xlsm',sheetname='당기순이익1',header=None)  # 당기순이익
+#rtn_kq = pd.read_excel('msci_rawdata_kq2.xlsm',sheetname='수익률1',header=None)  #수익률
+#equity_kq = pd.read_excel('msci_rawdata_kq2.xlsm',sheetname='자본총계1',header=None)  #자본총걔
+#size_FIF_wisefn_kq = pd.read_excel('msci_rawdata_kq2.xlsm',sheetname='유통주식수x수정주가1',header=None)  #free floating 시가총액
+#cash_div_kq = pd.read_excel('msci_rawdata_kq2.xlsm',sheetname='현금배당액1',header=None)
 #
+kospi_quarter = pd.read_pickle('kospi_quarter')
 raw_data = pd.read_pickle('raw_data')
 size = pd.read_pickle('size')  #시가총액
 ni = pd.read_pickle('ni') # 당기순이익
@@ -75,7 +76,7 @@ cash_div_sum=pd.concat([cash_div,cash_div_kq],axis=0,ignore_index=True)
 #size_FIF_wisefn = pd.read_excel('msci_rawdata.xlsx',sheetname='유통주식수x수정주가1',header=None) # wisefn에서 산출해주는 유통비율 이용
 #size_FIF_wisefn.to_pickle('size_FIF_wisefn')
 
-
+turnover = pd.DataFrame(np.zeros((1,1)))
 return_data = np.zeros((5,64))
 return_data = pd.DataFrame(return_data)
 data_name=pd.DataFrame(np.zeros((1000,64)))
@@ -87,6 +88,7 @@ for n in range(3,67):
     data.columns = ['name','group','size_FIF_wisefn','equity','ni_12fw','cash_div','size']
     result_temp = data
     samsung = pd.DataFrame(data.loc[390,:]).transpose()
+    #만약 삼전의 재무재표중 없는게 있다면 14 column을 맞추기 위해 0을 넣어버림
     if (np.isnan(result_temp.loc[390]['equity']))|(np.isnan(result_temp.loc[390]['ni_12fw']))|(np.isnan(result_temp.loc[390]['cash_div'])):
         samsung = pd.DataFrame(result_temp.loc[390,:]).transpose()
         samsung['1/pbr'] = 0
@@ -173,6 +175,7 @@ for n in range(3,67):
     
     
 #    result = pd.concat([result,pd.DataFrame(result_temp.loc[390,:]).transpose()],axis=0)
+    #어쨋든 삼전이 탈락했다면
     if np.sum(result['name']=="삼성전자")!=1:
         samsung['1/pbr'] = 0
         samsung['1/per'] = 0
@@ -364,11 +367,24 @@ np.sum(np.sum(data_name=="삼성전자"))
 average_return = np.mean(return_data,axis=1)
 std_return = np.std(return_data,axis=1)
 average_return/std_return
+#turnover
+for n in range(3,66):
+    
+    len1 = len(data_name[data_name[n-2].notnull()])
+    aaa=data_name.loc[:,[n-3,n-2]]
+    bbb=pd.DataFrame(aaa.stack().value_counts())
+    len2=len(bbb[bbb[0]==2])
+    data_name.loc[999,n-2]=(len1-len2)/len1
+    qqqqq=data_name.iloc[999,1:]
+    turnover=np.mean(qqqqq)
 
-
-
-
-
+#승률
+diff = return_data - np.tile(kospi_quarter,(5,1))
+column_lengh = len(diff.columns)
+diff = diff>0
+#true == 1 , False == 0 으로 판단하기 때문에 다 더하면 가장 끝 column에 0보다 큰 것들 갯수가 남음
+diff = diff.cumsum(axis=1)
+win_rate = diff[column_lengh-1]/column_lengh
 
 
 
