@@ -350,6 +350,10 @@ for n in range(3,67):
                        
 #대형주+중형주+소형주+KOSDAQ                       
     result = pd.concat([result1,result2,result3])
+    #n=33 일때 국민은행 같은게 지주사로 전환되면서 수익률이 0으로 나와버림 NAN이랑은 다른개념 
+    #사전에 공시가 되기 때문에 거를수 있을거라 판단해서 제외
+    #일딴 여기서 제거해보고 , z 값 산출 전에 제거하는법 생각
+    result = result[result[14]!=0]
     #매 분기 수익률을 기록
     quarter_data[[2*(n-3),2*(n-3)+1]] = result.iloc[:,[0,14]].reset_index(drop=True)
     market_capital=np.sum(result[2])
