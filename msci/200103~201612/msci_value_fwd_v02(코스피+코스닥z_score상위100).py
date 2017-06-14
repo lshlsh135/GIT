@@ -87,15 +87,18 @@ turnover = pd.DataFrame(np.zeros((1,1)))
 return_data = np.zeros((5,64))
 return_data = pd.DataFrame(return_data)
 data_name=pd.DataFrame(np.zeros((1000,64)))
+kosdaq_count = pd.DataFrame(np.zeros((1,64)))
 # 매 분기 수익률을 기록하기 위해 quarter_data를 만듬
-quarter_data = pd.DataFrame(np.zeros((1000,128)))
+quarter_data = pd.DataFrame(np.zeros((1000,192)))
 for n in range(3,67):
     #66마지막 분기
     data_big = raw_data_sum[(raw_data_sum[n] == 1)|(raw_data_sum[n] == 2)|(raw_data_sum[n] == 3)|(raw_data_sum[n] == 'KOSDAQ')]
     data_big = data_big.loc[:,[1,n]]
-    data = pd.concat([data_big, size_FIF_wisefn_sum[n], equity_sum[n], ni_sum[n+1],cash_div_sum[n],size_sum[n]],axis=1,join='inner',ignore_index=True)
-    data.columns = ['name','group','size_FIF_wisefn','equity','ni_12fw','cash_div','size']
+    data = pd.concat([data_big, size_FIF_wisefn_sum[n], equity_sum[n], ni_sum[n+1],cash_div_sum[n],size_sum[n],rtn_sum[n-3]],axis=1,join='inner',ignore_index=True)
+    data.columns = ['name','group','size_FIF_wisefn','equity','ni_12fw','cash_div','size','return']
     data=data[data['size']>100000000000]
+    #상폐, 지주사전환, 분할상장 때문에 생기는 수익률 0 제거
+    data=data[data['return']!=0]
     result_temp = data
     samsung = pd.DataFrame(data.loc[390,:]).transpose()
     #만약 삼전의 재무재표중 없는게 있다면 14 column을 맞추기 위해 0을 넣어버림
@@ -201,26 +204,33 @@ for n in range(3,67):
     result = result[result['rnk']<101] 
     
 
-    result = pd.concat([result,rtn_sum[n-3]],axis=1,join='inner',ignore_index=True) #수익률 매칭
+#    result = pd.concat([result,rtn_sum[n-3]],axis=1,join='inner',ignore_index=True) #수익률 매칭
     
   
                        
 #대형주+중형주+소형주+KOSDAQ                       
     
+    #코스닥이 몇종목 포함되었는지 기록
+    kosdaq_number = result['group']=='KOSDAQ'
+    kosdaq_number2 = pd.DataFrame(kosdaq_number.cumsum(axis=0))
+    kosdaq_count.iloc[0,n-3] = kosdaq_number2.iloc[99,0]
+    
+    
+
     #n=33 일때 국민은행 같은게 지주사로 전환되면서 수익률이 0으로 나와버림 NAN이랑은 다른개념 
     #사전에 공시가 되기 때문에 거를수 있을거라 판단해서 제외
     #일딴 여기서 제거해보고 , z 값 산출 전에 제거하는법 생각
-    result = result[result[15]!=0]
+#    result = result[result[15]!=0]
     #매 분기 수익률을 기록
-    quarter_data[[2*(n-3),2*(n-3)+1]] = result.iloc[:,[0,14]].reset_index(drop=True)
-    market_capital=np.sum(result[2])
-    result=result.assign(market_weight2=result[2]/market_capital)          
+    quarter_data[[3*(n-3),3*(n-3)+1,3*(n-3)+2]] = result.iloc[:,[0,1,15]].reset_index(drop=True)
+    market_capital=np.sum(result['return'])
+    result=result.assign(market_weight2=result['size_FIF_wisefn']/market_capital)          
     
     #동일가중
-    return_data.iloc[0,n-3]=np.mean(result[15])
+    return_data.iloc[0,n-3]=np.mean(result['return'])
 #시총가중
 #    return_data.iloc[0,n-3]=np.sum(result[14]*result['market_weight2'])
-    data_name[n-3]=result[0].reset_index(drop=True)
+    data_name[n-3]=result['name'].reset_index(drop=True)
 #    return_data.iloc[0,n-3]=np.sum(result[13]*result[14])    
     if n == 66 : 
         pass
