@@ -278,7 +278,7 @@ for n in range(3,67):
     data_big = data_big.loc[:,[1,n]]
     data1 = pd.concat([data_big, size_FIF_wisefn[n], equity[n], ni[n+1],cash_div[n],size[n]],axis=1,join='inner',ignore_index=True)
     data1.columns = ['name','group','size_FIF_wisefn','equity','ni_12fw','cash_div','size']
-    data1['size']>100000000000
+    data1=data1[data1['size']>100000000000]
   #KOSDAQ
     data_big = raw_data_sum[(raw_data_sum[n] == 'KOSDAQ')]                   
     data_big = data_big.loc[:,[1,n]]

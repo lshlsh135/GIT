@@ -95,7 +95,7 @@ for n in range(3,67):
     data_big = data_big.loc[:,[1,n]]
     data = pd.concat([data_big, size_FIF_wisefn[n], equity[n], ni[n+1],cash_div[n],size[n]],axis=1,join='inner',ignore_index=True)
     data.columns = ['name','group','size_FIF_wisefn','equity','ni_12fw','cash_div','size']
-    data['size']>100000000000
+    data=data[data['size']>100000000000]
     result_temp = data
     samsung = pd.DataFrame(data.loc[390,:]).transpose()
     #만약 삼전의 재무재표중 없는게 있다면 14 column을 맞추기 위해 0을 넣어버림
