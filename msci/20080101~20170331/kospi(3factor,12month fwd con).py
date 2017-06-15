@@ -5,36 +5,8 @@ Created on Thu Jun 15 10:31:48 2017
 @author: SH-NoteBook
 """
 
-# -*- coding: utf-8 -*-
-"""
-Created on Wed Jun 14 11:01:01 2017
-
-@author: SH-NoteBook
-"""
-
-# -*- coding: utf-8 -*-
-"""
-Created on Mon Jun 12 14:18:48 2017
-
-@author: SH-NoteBook
-"""
-
-# -*- coding: utf-8 -*-
-"""
-Created on Mon May 29 15:14:33 2017
-
-@author: SH-NoteBook
-"""
-
-# -*- coding: utf-8 -*-
-"""
-Created on Wed May 17 15:14:03 2017
-
-@author: SH-NoteBook
-"""
-#200103~201703
-#2 삼성전자 모두 포함하게 
-#forward 를 미리 안다고 가정해서 다음기 당기순이익을 받아서 사용
+#200103~201703 2 5 8 11 월 말 리밸런싱
+#12 month forward 당기순이익 있는건 그대로 쓰고 없다면 trailing 당기순이익 사용 
 #당기순이익이나 자기자본, 현금배당이 NAN인것들 제외
 #==============================================================================
 # MSCI Value = > Trailing PBR 역수, PBR 12m forward 역수, 배당수익률 역수
@@ -62,13 +34,13 @@ import numpy as np
 #
 #ni_12m_fw = pd.read_excel('exercise_v02.xlsm',sheetname='월별당기순이익CON1',header=None)
 #ni_12m_fw.to_pickle('ni_12m_fw')
-#kospi_quarter = pd.read_excel('exercise_v02.xlsm',sheetname='KOSPI1',header=None) 
-#kospi_quarter.to_pickle('kospi_quarter')
+#ni = pd.read_excel('msci_rawdata_kospi_25811.xlsm',sheetname='당기순이익MAIN1',header=None) 
+#ni.to_pickle('ni')
 ni_12m_fw = pd.read_pickle('ni_12m_fw') #당기순이익 12month fwd 컨센서스 + 빈칸은 trailing 25811
 kospi_quarter = pd.read_pickle('kospi_quarter') #2 5 8 11 
 raw_data = pd.read_pickle('raw_data')
 size = pd.read_pickle('size')  #시가총액 2 5 8 11
-#ni = pd.read_pickle('ni') # 당기순이익
+ni = pd.read_pickle('ni') # 당기순이익
 rtn = pd.read_pickle('rtn')
 equity = pd.read_pickle('equity') #자본총계
 cash_div = pd.read_pickle('cash_div')
