@@ -62,44 +62,46 @@ import numpy as np
 #
 #ni_12m_fw = pd.read_excel('exercise_v02.xlsm',sheetname='월별당기순이익CON1',header=None)
 #ni_12m_fw.to_pickle('ni_12m_fw')
-ni_12m_fw = pd.read_pickle('ni_12m_fw') #당기순이익 12month fwd 컨센서스 + 빈칸은 trailing
-kospi_quarter = pd.read_pickle('kospi_quarter')
+#kospi_quarter = pd.read_excel('exercise_v02.xlsm',sheetname='KOSPI1',header=None) 
+#kospi_quarter.to_pickle('kospi_quarter')
+ni_12m_fw = pd.read_pickle('ni_12m_fw') #당기순이익 12month fwd 컨센서스 + 빈칸은 trailing 25811
+kospi_quarter = pd.read_pickle('kospi_quarter') #2 5 8 11 
 raw_data = pd.read_pickle('raw_data')
-size = pd.read_pickle('size')  #시가총액
+size = pd.read_pickle('size')  #시가총액 2 5 8 11
 #ni = pd.read_pickle('ni') # 당기순이익
 rtn = pd.read_pickle('rtn')
 equity = pd.read_pickle('equity') #자본총계
 cash_div = pd.read_pickle('cash_div')
 size_FIF_wisefn=pd.read_pickle('size_FIF_wisefn') #시가총액
 
-raw_data_kq = pd.read_pickle('raw_data_kq')
-size_kq = pd.read_pickle('size_kq')  #시가총액
-ni_kq = pd.read_pickle('ni_kq') # 당기순이익
-rtn_kq = pd.read_pickle('rtn_kq')
-equity_kq = pd.read_pickle('equity_kq') #자본총계
-cash_div_kq = pd.read_pickle('cash_div_kq')
-size_FIF_wisefn_kq=pd.read_pickle('size_FIF_wisefn_kq') #시가총액
+#raw_data_kq = pd.read_pickle('raw_data_kq')
+#size_kq = pd.read_pickle('size_kq')  #시가총액
+#ni_kq = pd.read_pickle('ni_kq') # 당기순이익
+#rtn_kq = pd.read_pickle('rtn_kq')
+#equity_kq = pd.read_pickle('equity_kq') #자본총계
+#cash_div_kq = pd.read_pickle('cash_div_kq')
+#size_FIF_wisefn_kq=pd.read_pickle('size_FIF_wisefn_kq') #시가총액
 
 #소형주 + KOSDAQ 하기 위해 새로운 rawdata 생성(primary key 때문에)                   
-raw_data_sum=pd.concat([raw_data,raw_data_kq],axis=0,ignore_index=True)
-rtn_sum=pd.concat([rtn,rtn_kq],axis=0,ignore_index=True)
-size_sum=pd.concat([size,size_kq],axis=0,ignore_index=True)  
-ni_sum=pd.concat([ni_12m_fw,ni_kq],axis=0,ignore_index=True)
-equity_sum=pd.concat([equity,equity_kq],axis=0,ignore_index=True)
-size_FIF_wisefn_sum=pd.concat([size_FIF_wisefn,size_FIF_wisefn_kq],axis=0,ignore_index=True)
-cash_div_sum=pd.concat([cash_div,cash_div_kq],axis=0,ignore_index=True)
+#raw_data_sum=pd.concat([raw_data,raw_data_kq],axis=0,ignore_index=True)
+#rtn_sum=pd.concat([rtn,rtn_kq],axis=0,ignore_index=True)
+#size_sum=pd.concat([size,size_kq],axis=0,ignore_index=True)  
+#ni_sum=pd.concat([ni_12m_fw,ni_kq],axis=0,ignore_index=True)
+#equity_sum=pd.concat([equity,equity_kq],axis=0,ignore_index=True)
+#size_FIF_wisefn_sum=pd.concat([size_FIF_wisefn,size_FIF_wisefn_kq],axis=0,ignore_index=True)
+#cash_div_sum=pd.concat([cash_div,cash_div_kq],axis=0,ignore_index=True)
 #size_FIF=pd.read_pickle('size_FIF')  #자기주식 제외 시가총액
 #size_FIF_insider=pd.read_pickle('size_FIF_insider') #자기주식, 최대주주 주식 제외 시가총
 #size_FIF_wisefn = pd.read_excel('msci_rawdata.xlsx',sheetname='유통주식수x수정주가1',header=None) # wisefn에서 산출해주는 유통비율 이용
 #size_FIF_wisefn.to_pickle('size_FIF_wisefn')
 
 turnover = pd.DataFrame(np.zeros((1,1)))
-return_data = np.zeros((5,64))
+return_data = np.zeros((5,65))
 return_data = pd.DataFrame(return_data)
-data_name=pd.DataFrame(np.zeros((1000,64)))
+data_name=pd.DataFrame(np.zeros((1000,65)))
 # 매 분기 수익률을 기록하기 위해 quarter_data를 만듬
-quarter_data = pd.DataFrame(np.zeros((1000,128)))
-for n in range(3,67):
+quarter_data = pd.DataFrame(np.zeros((1000,195)))
+for n in range(3,68):
     #66마지막 분기
     data_big = raw_data[(raw_data[n] == 1)|(raw_data[n] == 2)|(raw_data[n] == 3)]
     data_big = data_big.loc[:,[1,n]]
@@ -239,7 +241,7 @@ for n in range(3,67):
 #    return_data.iloc[0,n-3]=np.sum(result[14]*result['market_weight2'])
     data_name[n-3]=result['name'].reset_index(drop=True)
 #    return_data.iloc[0,n-3]=np.sum(result[13]*result[14])    
-    if n == 66 : 
+    if n == 67 : 
         pass
     return_final=np.product(return_data,axis=1)
 
@@ -250,7 +252,7 @@ average_return = np.mean(return_data,axis=1)
 std_return = np.std(return_data,axis=1)
 average_return/std_return
 #turnover
-for n in range(3,66):
+for n in range(3,67):
     
     len1 = len(data_name[data_name[n-2].notnull()])
     aaa=data_name.loc[:,[n-3,n-2]]
