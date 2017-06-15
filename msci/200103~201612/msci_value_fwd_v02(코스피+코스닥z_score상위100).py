@@ -201,7 +201,7 @@ for n in range(3,67):
         
     #중복 rows 1개 빼고 다 제거 
     result = result.drop_duplicates()
-    result = result[result['rnk']<101] 
+    result = result[result['rnk']<201] 
     
 
 #    result = pd.concat([result,rtn_sum[n-3]],axis=1,join='inner',ignore_index=True) #수익률 매칭
@@ -213,7 +213,8 @@ for n in range(3,67):
     #코스닥이 몇종목 포함되었는지 기록
     kosdaq_number = result['group']=='KOSDAQ'
     kosdaq_number2 = pd.DataFrame(kosdaq_number.cumsum(axis=0))
-    kosdaq_count.iloc[0,n-3] = kosdaq_number2.iloc[99,0]
+    len3 = len(kosdaq_number2)
+    kosdaq_count.iloc[0,n-3] = kosdaq_number2.iloc[len3-1,0]
     
     
 
@@ -222,8 +223,8 @@ for n in range(3,67):
     #일딴 여기서 제거해보고 , z 값 산출 전에 제거하는법 생각
 #    result = result[result[15]!=0]
     #매 분기 수익률을 기록
-    quarter_data[[3*(n-3),3*(n-3)+1,3*(n-3)+2]] = result.iloc[:,[0,1,15]].reset_index(drop=True)
-    market_capital=np.sum(result['return'])
+    quarter_data[[3*(n-3),3*(n-3)+1,3*(n-3)+2]] = result.iloc[:,[0,1,7]].reset_index(drop=True)
+    market_capital=np.sum(result['size_FIF_wisefn'])
     result=result.assign(market_weight2=result['size_FIF_wisefn']/market_capital)          
     
     #동일가중

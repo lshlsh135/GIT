@@ -93,21 +93,23 @@ for n in range(3,67):
     #66마지막 분기
     data_big = raw_data[(raw_data[n] == 1)|(raw_data[n] == 2)|(raw_data[n] == 3)]
     data_big = data_big.loc[:,[1,n]]
-    data = pd.concat([data_big, size_FIF_wisefn[n], equity[n], ni[n+1],cash_div[n],size[n]],axis=1,join='inner',ignore_index=True)
-    data.columns = ['name','group','size_FIF_wisefn','equity','ni_12fw','cash_div','size']
+    data = pd.concat([data_big, size_FIF_wisefn[n], equity[n], ni[n+1],cash_div[n],size[n],rtn[n-3]],axis=1,join='inner',ignore_index=True)
+    data.columns = ['name','group','size_FIF_wisefn','equity','ni_12fw','cash_div','size','return']
     data=data[data['size']>100000000000]
+    #상폐, 지주사전환, 분할상장 때문에 생기는 수익률 0 제거
+    data=data[data['return']!=0]
     result_temp = data
     samsung = pd.DataFrame(data.loc[390,:]).transpose()
     #만약 삼전의 재무재표중 없는게 있다면 14 column을 맞추기 위해 0을 넣어버림
-    if (np.isnan(result_temp.loc[390]['equity']))|(np.isnan(result_temp.loc[390]['ni_12fw']))|(np.isnan(result_temp.loc[390]['cash_div'])):
-        samsung = pd.DataFrame(result_temp.loc[390,:]).transpose()
-        samsung['1/pbr'] = 0
-        samsung['1/per'] = 0
-        samsung['div_yield'] = 0
-        samsung['pbr_z'] = 0
-        samsung['per_z'] = 0
-        samsung['div_z'] = 0
-        samsung['z_score'] = 0
+#    if (np.isnan(result_temp.loc[390]['equity']))|(np.isnan(result_temp.loc[390]['ni_12fw']))|(np.isnan(result_temp.loc[390]['cash_div'])):
+#        samsung = pd.DataFrame(result_temp.loc[390,:]).transpose()
+#        samsung['1/pbr'] = 0
+#        samsung['1/per'] = 0
+#        samsung['div_yield'] = 0
+#        samsung['pbr_z'] = 0
+#        samsung['per_z'] = 0
+#        samsung['div_z'] = 0
+#        samsung['z_score'] = 0
     
     data = data[data['equity'].notnull()]
     data = data[data['ni_12fw'].notnull()]
@@ -203,7 +205,7 @@ for n in range(3,67):
     
     
 
-    result = pd.concat([result,rtn[n-3]],axis=1,join='inner',ignore_index=True) #수익률 매칭
+#    result = pd.concat([result,rtn[n-3]],axis=1,join='inner',ignore_index=True) #수익률 매칭
     
     
 
@@ -215,17 +217,17 @@ for n in range(3,67):
     #n=33 일때 국민은행 같은게 지주사로 전환되면서 수익률이 0으로 나와버림 NAN이랑은 다른개념 
     #사전에 공시가 되기 때문에 거를수 있을거라 판단해서 제외
     #일딴 여기서 제거해보고 , z 값 산출 전에 제거하는법 생각
-    result = result[result[15]!=0]
+#    result = result[result[15]!=0]
     #매 분기 수익률을 기록
-    quarter_data[[2*(n-3),2*(n-3)+1]] = result.iloc[:,[0,15]].reset_index(drop=True)
-    market_capital=np.sum(result[2])
-    result=result.assign(market_weight2=result[2]/market_capital)          
+    quarter_data[[2*(n-3),2*(n-3)+1]] = result.iloc[:,[0,7]].reset_index(drop=True)
+    market_capital=np.sum(result['size_FIF_wisefn'])
+    result=result.assign(market_weight2=result['size_FIF_wisefn']/market_capital)          
     
     #동일가중
-    return_data.iloc[0,n-3]=np.mean(result[15])
+    return_data.iloc[0,n-3]=np.mean(result['return'])
 #시총가중
 #    return_data.iloc[0,n-3]=np.sum(result[14]*result['market_weight2'])
-    data_name[n-3]=result[0].reset_index(drop=True)
+    data_name[n-3]=result['name'].reset_index(drop=True)
 #    return_data.iloc[0,n-3]=np.sum(result[13]*result[14])    
     if n == 66 : 
         pass
