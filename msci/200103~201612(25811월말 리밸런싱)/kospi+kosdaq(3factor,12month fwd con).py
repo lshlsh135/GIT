@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 """
-Created on Thu Jun 15 10:31:48 2017
+Created on Thu Jun 15 13:37:56 2017
 
 @author: SH-NoteBook
 """
+
 
 #200103~201703 2 5 8 11 월 말 리밸런싱
 #12 month forward 당기순이익 있는건 그대로 쓰고 없다면 trailing 당기순이익 사용 
@@ -23,45 +24,45 @@ import numpy as np
 #equity_kq.to_pickle('equity_kq')
 #cash_div_kq.to_pickle('cash_div_kq')
 #size_FIF_wisefn_kq.to_pickle('size_FIF_wisefn_kq')
+#ni_12m_fw_kq.to_pickle('ni_12m_fw_kq')
 #raw_data_=pd.read_excel('exercise_v02.xlsx',sheetname='Raw_data1',header=None)
 #raw_data_kq=pd.read_excel('msci_rawdata_kq2.xlsm',sheetname='Raw_data_kq1',header=None)  # 편입시장
 #size_kq = pd.read_excel('msci_rawdata_kq2.xlsm',sheetname='시가총액1',header=None)  #시가총액
-#ni_kq = pd.read_excel('msci_rawdata_kq2.xlsm',sheetname='당기순이익1',header=None)  # 당기순이익
+#ni_kq = pd.read_excel('msci_rawdata_kq2.xlsm',sheetname='당기순이익MAIN1',header=None)  # 당기순이익
+#ni_12m_fw_kq = pd.read_excel('msci_rawdata_kq2.xlsm',sheetname='월별당기순이익CON1',header=None)  # 당기순이익
 #rtn_kq = pd.read_excel('msci_rawdata_kq2.xlsm',sheetname='수익률1',header=None)  #수익률
 #equity_kq = pd.read_excel('msci_rawdata_kq2.xlsm',sheetname='자본총계1',header=None)  #자본총걔
 #size_FIF_wisefn_kq = pd.read_excel('msci_rawdata_kq2.xlsm',sheetname='유통주식수x수정주가1',header=None)  #free floating 시가총액
 #cash_div_kq = pd.read_excel('msci_rawdata_kq2.xlsm',sheetname='현금배당액1',header=None)
 #
-#ni_12m_fw = pd.read_excel('exercise_v02.xlsm',sheetname='월별당기순이익CON1',header=None)
-#ni_12m_fw.to_pickle('ni_12m_fw')
-#ni = pd.read_excel('msci_rawdata_kospi_25811.xlsm',sheetname='당기순이익MAIN1',header=None) 
-#ni.to_pickle('ni')
-ni_12m_fw = pd.read_pickle('ni_12m_fw') #당기순이익 12month fwd 컨센서스 + 빈칸은 trailing 25811
-kospi_quarter = pd.read_pickle('kospi_quarter') #2 5 8 11 
+kospi_quarter = pd.read_pickle('kospi_quarter')
 raw_data = pd.read_pickle('raw_data')
-size = pd.read_pickle('size')  #시가총액 2 5 8 11
+size = pd.read_pickle('size')  #시가총액
 ni = pd.read_pickle('ni') # 당기순이익
+ni_12m_fw = pd.read_pickle('ni_12m_fw')
 rtn = pd.read_pickle('rtn')
 equity = pd.read_pickle('equity') #자본총계
 cash_div = pd.read_pickle('cash_div')
 size_FIF_wisefn=pd.read_pickle('size_FIF_wisefn') #시가총액
 
-#raw_data_kq = pd.read_pickle('raw_data_kq')
-#size_kq = pd.read_pickle('size_kq')  #시가총액
-#ni_kq = pd.read_pickle('ni_kq') # 당기순이익
-#rtn_kq = pd.read_pickle('rtn_kq')
-#equity_kq = pd.read_pickle('equity_kq') #자본총계
-#cash_div_kq = pd.read_pickle('cash_div_kq')
-#size_FIF_wisefn_kq=pd.read_pickle('size_FIF_wisefn_kq') #시가총액
+raw_data_kq = pd.read_pickle('raw_data_kq')
+size_kq = pd.read_pickle('size_kq')  #시가총액
+ni_kq = pd.read_pickle('ni_kq') # 당기순이익
+ni_12m_fw_kq = pd.read_pickle('ni_12m_fw_kq') 
+rtn_kq = pd.read_pickle('rtn_kq')
+equity_kq = pd.read_pickle('equity_kq') #자본총계
+cash_div_kq = pd.read_pickle('cash_div_kq')
+size_FIF_wisefn_kq=pd.read_pickle('size_FIF_wisefn_kq') #시가총액
 
 #소형주 + KOSDAQ 하기 위해 새로운 rawdata 생성(primary key 때문에)                   
-#raw_data_sum=pd.concat([raw_data,raw_data_kq],axis=0,ignore_index=True)
-#rtn_sum=pd.concat([rtn,rtn_kq],axis=0,ignore_index=True)
-#size_sum=pd.concat([size,size_kq],axis=0,ignore_index=True)  
-#ni_sum=pd.concat([ni_12m_fw,ni_kq],axis=0,ignore_index=True)
-#equity_sum=pd.concat([equity,equity_kq],axis=0,ignore_index=True)
-#size_FIF_wisefn_sum=pd.concat([size_FIF_wisefn,size_FIF_wisefn_kq],axis=0,ignore_index=True)
-#cash_div_sum=pd.concat([cash_div,cash_div_kq],axis=0,ignore_index=True)
+raw_data_sum=pd.concat([raw_data,raw_data_kq],axis=0,ignore_index=True)
+rtn_sum=pd.concat([rtn,rtn_kq],axis=0,ignore_index=True)
+size_sum=pd.concat([size,size_kq],axis=0,ignore_index=True)
+ni_12m_fw_sum = pd.concat([ni_12m_fw,ni_12m_fw_kq],axis=0,ignore_index=True)
+ni_sum=pd.concat([ni,ni_kq],axis=0,ignore_index=True)
+equity_sum=pd.concat([equity,equity_kq],axis=0,ignore_index=True)
+size_FIF_wisefn_sum=pd.concat([size_FIF_wisefn,size_FIF_wisefn_kq],axis=0,ignore_index=True)
+cash_div_sum=pd.concat([cash_div,cash_div_kq],axis=0,ignore_index=True)
 #size_FIF=pd.read_pickle('size_FIF')  #자기주식 제외 시가총액
 #size_FIF_insider=pd.read_pickle('size_FIF_insider') #자기주식, 최대주주 주식 제외 시가총
 #size_FIF_wisefn = pd.read_excel('msci_rawdata.xlsx',sheetname='유통주식수x수정주가1',header=None) # wisefn에서 산출해주는 유통비율 이용
@@ -71,13 +72,15 @@ turnover = pd.DataFrame(np.zeros((1,1)))
 return_data = np.zeros((5,65))
 return_data = pd.DataFrame(return_data)
 data_name=pd.DataFrame(np.zeros((1000,65)))
+kosdaq_count = pd.DataFrame(np.zeros((1,65)))
 # 매 분기 수익률을 기록하기 위해 quarter_data를 만듬
 quarter_data = pd.DataFrame(np.zeros((1000,195)))
 for n in range(3,68):
     #66마지막 분기
-    data_big = raw_data[(raw_data[n] == 1)|(raw_data[n] == 2)|(raw_data[n] == 3)]
+    data_big = raw_data_sum[(raw_data_sum[n] == 1)|(raw_data_sum[n] == 2)|(raw_data_sum[n] == 3)|(raw_data_sum[n] == 'KOSDAQ')]
     data_big = data_big.loc[:,[1,n]]
-    data = pd.concat([data_big, size_FIF_wisefn[n], equity[n], ni_12m_fw[n],cash_div[n],size[n],rtn[n-3]],axis=1,join='inner',ignore_index=True)
+    #ni_12m_fw_sum 쓰면 fwd per, 그냥 ni_sum 쓰면 trailing
+    data = pd.concat([data_big, size_FIF_wisefn_sum[n], equity_sum[n], ni_12m_fw_sum[n],cash_div_sum[n],size_sum[n],rtn_sum[n-3]],axis=1,join='inner',ignore_index=True)
     data.columns = ['name','group','size_FIF_wisefn','equity','ni_12fw','cash_div','size','return']
     data=data[data['size']>100000000000]
     #상폐, 지주사전환, 분할상장 때문에 생기는 수익률 0 제거
@@ -164,12 +167,11 @@ for n in range(3,68):
     
     # z_score > 0 인것이 가치주라고 msci에서 하고있음
     result =result[result['z_score'].notnull()]
-    #z_score 큰순서대로 rank 추가
-    result=result.assign(rnk=result['z_score'].rank(method='first',ascending=False)) 
+    
     #상위 65%로 결정하면 삼성전자가 n=64,65,66일때 모두 포함이 된다.
 #    z_score1_max=np.percentile(result['z_score'],50)
 #    result =result[result['z_score']>z_score1_max]
-    
+    result=result.assign(rnk=result['z_score'].rank(method='first',ascending=False)) 
     
 #    result = pd.concat([result,pd.DataFrame(result_temp.loc[390,:]).transpose()],axis=0)
     #어쨋든 삼전이 탈락했다면
@@ -185,25 +187,32 @@ for n in range(3,68):
         
     #중복 rows 1개 빼고 다 제거 
     result = result.drop_duplicates()
-    result = result[result['rnk']<101]
-    
-    
-
-#    result = pd.concat([result,rtn[n-3]],axis=1,join='inner',ignore_index=True) #수익률 매칭
-    
+    result = result[result['rnk']<201] 
     
 
+#    result = pd.concat([result,rtn_sum[n-3]],axis=1,join='inner',ignore_index=True) #수익률 매칭
     
-   
+  
                        
 #대형주+중형주+소형주+KOSDAQ                       
     
+    #코스닥이 몇종목 포함되었는지 기록
+    try : 
+        kosdaq_number = result['group']=='KOSDAQ'
+    except :
+        kosdaq_number = result['group']==0
+    kosdaq_number2 = pd.DataFrame(kosdaq_number.cumsum(axis=0))
+    len3 = len(kosdaq_number2)
+    kosdaq_count.iloc[0,n-3] = kosdaq_number2.iloc[len3-1,0]
+    
+    
+
     #n=33 일때 국민은행 같은게 지주사로 전환되면서 수익률이 0으로 나와버림 NAN이랑은 다른개념 
     #사전에 공시가 되기 때문에 거를수 있을거라 판단해서 제외
     #일딴 여기서 제거해보고 , z 값 산출 전에 제거하는법 생각
 #    result = result[result[15]!=0]
     #매 분기 수익률을 기록
-    quarter_data[[2*(n-3),2*(n-3)+1]] = result.iloc[:,[0,7]].reset_index(drop=True)
+    quarter_data[[3*(n-3),3*(n-3)+1,3*(n-3)+2]] = result.iloc[:,[0,1,7]].reset_index(drop=True)
     market_capital=np.sum(result['size_FIF_wisefn'])
     result=result.assign(market_weight2=result['size_FIF_wisefn']/market_capital)          
     
