@@ -74,12 +74,14 @@ return_data = pd.DataFrame(return_data)
 data_name=pd.DataFrame(np.zeros((1000,65)))
 # 매 분기 수익률을 기록하기 위해 quarter_data를 만듬
 quarter_data = pd.DataFrame(np.zeros((1000,195)))
+sector_data = pd.DataFrame(np.zeros((1000,130)))
+group_data = pd.DataFrame(np.zeros((1000,130)))
 for n in range(3,68):
     #66마지막 분기
     data_big = raw_data[(raw_data[n] == 1)|(raw_data[n] == 2)|(raw_data[n] == 3)]
     data_big = data_big.loc[:,[1,n]]
-    data = pd.concat([data_big, size_FIF_wisefn[n], equity[n], ni_12m_fw[n],cash_div[n],size[n],rtn[n-3]],axis=1,join='inner',ignore_index=True)
-    data.columns = ['name','group','size_FIF_wisefn','equity','ni_12fw','cash_div','size','return']
+    data = pd.concat([data_big, size_FIF_wisefn[n], equity[n], ni_12m_fw[n],cash_div[n],size[n],rtn[n-3],sector[n]],axis=1,join='inner',ignore_index=True)
+    data.columns = ['name','group','size_FIF_wisefn','equity','ni_12fw','cash_div','size','return','sector']
     data=data[data['size']>100000000000]
     #상폐, 지주사전환, 분할상장 때문에 생기는 수익률 0 제거
     data=data[data['return']!=0]
@@ -214,6 +216,8 @@ for n in range(3,68):
 #    return_data.iloc[0,n-3]=np.sum(result[14]*result['market_weight2'])
     data_name[n-3]=result['name'].reset_index(drop=True)
 #    return_data.iloc[0,n-3]=np.sum(result[13]*result[14])    
+    sector_data[[2*(n-3),2*(n-3)+1]]=result.groupby('sector').size().reset_index(drop=False)
+    group_data[[2*(n-3),2*(n-3)+1]]=result.groupby('group').size().reset_index(drop=False)
     if n == 67 : 
         pass
     return_final=np.product(return_data,axis=1)

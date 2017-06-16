@@ -79,6 +79,8 @@ data_name=pd.DataFrame(np.zeros((1000,65)))
 kosdaq_count = pd.DataFrame(np.zeros((1,65)))
 # 매 분기 수익률을 기록하기 위해 quarter_data를 만듬
 quarter_data = pd.DataFrame(np.zeros((1000,195)))
+sector_data = pd.DataFrame(np.zeros((1000,130)))
+group_data = pd.DataFrame(np.zeros((1000,130)))
 for n in range(3,68):
     #66마지막 분기
     data_big = raw_data_sum[(raw_data_sum[n] == 1)|(raw_data_sum[n] == 2)|(raw_data_sum[n] == 3)|(raw_data_sum[n] == 'KOSDAQ')]
@@ -225,6 +227,9 @@ for n in range(3,68):
 #시총가중
 #    return_data.iloc[0,n-3]=np.sum(result[14]*result['market_weight2'])
     data_name[n-3]=result['name'].reset_index(drop=True)
+    #섹터별 비중 구함
+    sector_data[[2*(n-3),2*(n-3)+1]]=result.groupby('sector').size().reset_index(drop=False)
+    group_data[[2*(n-3),2*(n-3)+1]]=result.groupby('group').size().reset_index(drop=False)
 #    return_data.iloc[0,n-3]=np.sum(result[13]*result[14])    
     if n == 67 : 
         pass
@@ -256,4 +261,5 @@ diff = diff.cumsum(axis=1)
 win_rate = diff[column_lengh-1]/column_lengh
 
 
+result.groupby('sector').count()   # sector 세는 코드
 
