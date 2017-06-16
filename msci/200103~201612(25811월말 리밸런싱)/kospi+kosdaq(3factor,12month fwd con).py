@@ -34,8 +34,8 @@ import numpy as np
 #equity_kq = pd.read_excel('msci_rawdata_kq2.xlsm',sheetname='자본총계1',header=None)  #자본총걔
 #size_FIF_wisefn_kq = pd.read_excel('msci_rawdata_kq2.xlsm',sheetname='유통주식수x수정주가1',header=None)  #free floating 시가총액
 #cash_div_kq = pd.read_excel('msci_rawdata_kq2.xlsm',sheetname='현금배당액1',header=None)
-#cash_div = pd.read_excel('msci_rawdata_kospi_25811.xlsm',sheetname='현금배당액1',header=None)
-#cash_div.to_pickle('cash_div')
+#sector_kq = pd.read_excel('msci_rawdata_kosdaq_25811.xlsm',sheetname='업종1',header=None)
+#sector_kq.to_pickle('sector_kq')
 kospi_quarter = pd.read_pickle('kospi_quarter')
 raw_data = pd.read_pickle('raw_data')
 size = pd.read_pickle('size')  #시가총액
@@ -45,6 +45,7 @@ rtn = pd.read_pickle('rtn')
 equity = pd.read_pickle('equity') #자본총계
 cash_div = pd.read_pickle('cash_div')
 size_FIF_wisefn=pd.read_pickle('size_FIF_wisefn') #시가총액
+sector=pd.read_pickle('sector') 
 
 raw_data_kq = pd.read_pickle('raw_data_kq')
 size_kq = pd.read_pickle('size_kq')  #시가총액
@@ -54,6 +55,7 @@ rtn_kq = pd.read_pickle('rtn_kq')
 equity_kq = pd.read_pickle('equity_kq') #자본총계
 cash_div_kq = pd.read_pickle('cash_div_kq')
 size_FIF_wisefn_kq=pd.read_pickle('size_FIF_wisefn_kq') #시가총액
+sector_kq=pd.read_pickle('sector_kq') #시가총액
 
 #소형주 + KOSDAQ 하기 위해 새로운 rawdata 생성(primary key 때문에)                   
 raw_data_sum=pd.concat([raw_data,raw_data_kq],axis=0,ignore_index=True)
@@ -64,6 +66,7 @@ ni_sum=pd.concat([ni,ni_kq],axis=0,ignore_index=True)
 equity_sum=pd.concat([equity,equity_kq],axis=0,ignore_index=True)
 size_FIF_wisefn_sum=pd.concat([size_FIF_wisefn,size_FIF_wisefn_kq],axis=0,ignore_index=True)
 cash_div_sum=pd.concat([cash_div,cash_div_kq],axis=0,ignore_index=True)
+sector_sum=pd.concat([sector,sector_kq],axis=0,ignore_index=True)
 #size_FIF=pd.read_pickle('size_FIF')  #자기주식 제외 시가총액
 #size_FIF_insider=pd.read_pickle('size_FIF_insider') #자기주식, 최대주주 주식 제외 시가총
 #size_FIF_wisefn = pd.read_excel('msci_rawdata.xlsx',sheetname='유통주식수x수정주가1',header=None) # wisefn에서 산출해주는 유통비율 이용
@@ -81,8 +84,8 @@ for n in range(3,68):
     data_big = raw_data_sum[(raw_data_sum[n] == 1)|(raw_data_sum[n] == 2)|(raw_data_sum[n] == 3)|(raw_data_sum[n] == 'KOSDAQ')]
     data_big = data_big.loc[:,[1,n]]
     #ni_12m_fw_sum 쓰면 fwd per, 그냥 ni_sum 쓰면 trailing
-    data = pd.concat([data_big, size_FIF_wisefn_sum[n], equity_sum[n], ni_12m_fw_sum[n],cash_div_sum[n],size_sum[n],rtn_sum[n-3]],axis=1,join='inner',ignore_index=True)
-    data.columns = ['name','group','size_FIF_wisefn','equity','ni_12fw','cash_div','size','return']
+    data = pd.concat([data_big, size_FIF_wisefn_sum[n], equity_sum[n], ni_12m_fw_sum[n],cash_div_sum[n],size_sum[n],rtn_sum[n-3],sector_sum[n]],axis=1,join='inner',ignore_index=True)
+    data.columns = ['name','group','size_FIF_wisefn','equity','ni_12fw','cash_div','size','return','sector']
     data=data[data['size']>100000000000]
     #상폐, 지주사전환, 분할상장 때문에 생기는 수익률 0 제거
     data=data[data['return']!=0]

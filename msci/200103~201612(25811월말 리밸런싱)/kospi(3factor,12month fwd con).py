@@ -45,6 +45,7 @@ rtn = pd.read_pickle('rtn')
 equity = pd.read_pickle('equity') #자본총계
 cash_div = pd.read_pickle('cash_div')
 size_FIF_wisefn=pd.read_pickle('size_FIF_wisefn') #시가총액
+sector=pd.read_pickle('sector') #시가총액
 
 #raw_data_kq = pd.read_pickle('raw_data_kq')
 #size_kq = pd.read_pickle('size_kq')  #시가총액
