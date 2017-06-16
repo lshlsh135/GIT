@@ -34,7 +34,8 @@ import numpy as np
 #equity_kq = pd.read_excel('msci_rawdata_kq2.xlsm',sheetname='자본총계1',header=None)  #자본총걔
 #size_FIF_wisefn_kq = pd.read_excel('msci_rawdata_kq2.xlsm',sheetname='유통주식수x수정주가1',header=None)  #free floating 시가총액
 #cash_div_kq = pd.read_excel('msci_rawdata_kq2.xlsm',sheetname='현금배당액1',header=None)
-#
+#cash_div = pd.read_excel('msci_rawdata_kospi_25811.xlsm',sheetname='현금배당액1',header=None)
+#cash_div.to_pickle('cash_div')
 kospi_quarter = pd.read_pickle('kospi_quarter')
 raw_data = pd.read_pickle('raw_data')
 size = pd.read_pickle('size')  #시가총액
