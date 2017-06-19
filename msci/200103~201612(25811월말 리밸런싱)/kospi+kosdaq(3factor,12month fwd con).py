@@ -262,4 +262,9 @@ win_rate = diff[column_lengh-1]/column_lengh
 
 
 result.groupby('sector').count()   # sector 세는 코드
+sector_data_temp = sector_data.set_index([0],drop=False)
+df1 = sector_data_temp.iloc[0:10,1]
 
+for n in range(1,65):
+    sector_data_temp = sector_data.set_index([2*(n)],drop=False)
+    df1 = pd.concat([df1,sector_data_temp.iloc[0:10,2*(n)+1]],axis=1)
