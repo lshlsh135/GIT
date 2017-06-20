@@ -261,10 +261,40 @@ diff = diff.cumsum(axis=1)
 win_rate = diff[column_lengh-1]/column_lengh
 
 
-result.groupby('sector').count()   # sector 세는 코드
+#섹터별 비중구하기 마지막
+#초기 기준이 되는 full index 설정
 sector_data_temp = sector_data.set_index([0],drop=False)
-df1 = sector_data_temp.iloc[0:10,1]
+#초기값 설정
+sector_data_count = sector_data_temp.iloc[0:10,1]
+sector_data_sum = np.sum(sector_data_count)
+sector_data_count = sector_data_count/sector_data_sum
 
+#sector 저장
 for n in range(1,65):
     sector_data_temp = sector_data.set_index([2*(n)],drop=False)
-    df1 = pd.concat([df1,sector_data_temp.iloc[0:10,2*(n)+1]],axis=1)
+    sector_row_lengh = len(sector_data[2*n][sector_data[2*n].notnull()])
+    sector_data_count = pd.concat([sector_data_count,sector_data_temp.iloc[0:sector_row_lengh,2*(n)+1]],axis=1)
+    sector_data_sum = np.sum(sector_data_count[2*n+1],axis=0)
+    sector_data_count[2*n+1] = sector_data_count[2*n+1]/sector_data_sum
+    
+#그룹별 비중구하기 마지막
+#초기 기준이 되는 full 그룹 설정
+group_data_temp = group_data.set_index([0],drop=False)
+#초기값 설정
+group_data_count = group_data_temp.iloc[0:4,1]
+group_data_sum = np.sum(group_data_count)
+group_data_count = group_data_count/group_data_sum
+
+#group 저장
+for n in range(1,65):
+    group_data_temp = group_data.set_index([2*(n)],drop=False)
+    group_row_lengh = len(group_data[2*n][group_data[2*n].notnull()])
+    group_data_count = pd.concat([group_data_count,group_data_temp.iloc[0:group_row_lengh,2*(n)+1]],axis=1)
+    group_data_sum = np.sum(group_data_count[2*n+1],axis=0)
+    group_data_count[2*n+1] = group_data_count[2*n+1]/group_data_sum
+    
+        
+
+
+
+
