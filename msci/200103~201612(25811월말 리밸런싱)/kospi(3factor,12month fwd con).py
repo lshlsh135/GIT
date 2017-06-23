@@ -46,6 +46,9 @@ equity = pd.read_pickle('equity') #자본총계
 cash_div = pd.read_pickle('cash_div')
 size_FIF_wisefn=pd.read_pickle('size_FIF_wisefn') #시가총액
 sector=pd.read_pickle('sector') #시가총액
+return_dividend = pd.read_pickle('return_dividend') #배당고려수익률
+cash_div_rtn = pd.read_pickle('cash_div_rtn') #연말현금배당수익률
+rtn_month = pd.read_pickle('rtn_month') #월별수익률
 
 #raw_data_kq = pd.read_pickle('raw_data_kq')
 #size_kq = pd.read_pickle('size_kq')  #시가총액
@@ -68,6 +71,8 @@ sector=pd.read_pickle('sector') #시가총액
 #size_FIF_wisefn = pd.read_excel('msci_rawdata.xlsx',sheetname='유통주식수x수정주가1',header=None) # wisefn에서 산출해주는 유통비율 이용
 #size_FIF_wisefn.to_pickle('size_FIF_wisefn')
 
+
+portfolio_cash_rtn = pd.DataFrame(np.zeros((1,16)))
 turnover = pd.DataFrame(np.zeros((1,1)))
 return_data = np.zeros((5,65))
 return_data = pd.DataFrame(return_data)
@@ -76,12 +81,16 @@ data_name=pd.DataFrame(np.zeros((1000,65)))
 quarter_data = pd.DataFrame(np.zeros((1000,195)))
 sector_data = pd.DataFrame(np.zeros((1000,130)))
 group_data = pd.DataFrame(np.zeros((1000,130)))
+result_cash = pd.DataFrame(np.zeros((200,16)))
+return_month_data = pd.DataFrame(np.zeros((1,195)))
+
+z=0 #연말현금배당수익률을 저장하기 위해 ... 아래 if문있음
 for n in range(3,68):
     #66마지막 분기
     data_big = raw_data[(raw_data[n] == 1)|(raw_data[n] == 2)|(raw_data[n] == 3)]
     data_big = data_big.loc[:,[1,n]]
-    data = pd.concat([data_big, size_FIF_wisefn[n], equity[n], ni_12m_fw[n],cash_div[n],size[n],rtn[n-3],sector[n]],axis=1,join='inner',ignore_index=True)
-    data.columns = ['name','group','size_FIF_wisefn','equity','ni_12fw','cash_div','size','return','sector']
+    data = pd.concat([data_big, size_FIF_wisefn[n], equity[n], ni_12m_fw[n],cash_div[n],size[n],rtn[n-3],sector[n],rtn_month[3*(n-3)],rtn_month[3*(n-3)+1],rtn_month[3*(n-3)+2]],axis=1,join='inner',ignore_index=True)
+    data.columns = ['name','group','size_FIF_wisefn','equity','ni_12fw','cash_div','size','return','sector','return_month1','return_month2','return_month3']
     data=data[data['size']>100000000000]
     #상폐, 지주사전환, 분할상장 때문에 생기는 수익률 0 제거
     data=data[data['return']!=0]
@@ -161,7 +170,7 @@ for n in range(3,68):
     result = pd.concat([data, data1, data2, data3], axis = 1)
     
     # np.nanmean : nan 값 포함해서 평균 내기!!
-    result = result.assign(z_score=np.nanmean(result.iloc[:,[10,11,12]],axis=1))
+    result = result.assign(z_score=np.nanmean(result.iloc[:,[12,13,14]],axis=1))
 #    result_temp = result
 
     
@@ -210,8 +219,24 @@ for n in range(3,68):
     market_capital=np.sum(result['size_FIF_wisefn'])
     result=result.assign(market_weight2=result['size_FIF_wisefn']/market_capital)          
     
+    #연말현금배당수익률 저장
+    if (n>4)&((n-4)%4==2):
+        result_cash_temp= pd.concat([result['name'],cash_div_rtn[(n+2)/4-2]],axis=1)
+        result_cash_temp=result_cash_temp[result_cash_temp['name'].notnull()]
+        result_cash[[z,z+1]] = result_cash_temp.iloc[:,[0,1]].reset_index(drop=True)
+        z=z+2
+    
+    
     #동일가중
     return_data.iloc[0,n-3]=np.mean(result['return'])
+
+    result = result.assign(gross_return_2 = result['return_month1']*result['return_month2'])
+    #아래처럼 구하면 누적수익률이 달라짐
+#    return_month_data[[3*(n-3),3*(n-3)+1,3*(n-3)+2]]=pd.DataFrame(np.mean(result[['return_month1','return_month2','return_month3']])).transpose()
+    #forward yield같은 느낌으로 구함
+    return_month_data[3*(n-3)] = np.mean(result['return_month1'])
+    return_month_data[3*(n-3)+1] = np.mean(result['gross_return_2'])/return_month_data[3*(n-3)]
+    return_month_data[3*(n-3)+2] = np.mean(result['return'])/np.mean(result['gross_return_2'])
 #시총가중
 #    return_data.iloc[0,n-3]=np.sum(result[14]*result['market_weight2'])
     data_name[n-3]=result['name'].reset_index(drop=True)
@@ -236,8 +261,21 @@ for n in range(3,67):
     bbb=pd.DataFrame(aaa.stack().value_counts())
     len2=len(bbb[bbb[0]==2])
     data_name.loc[999,n-2]=(len1-len2)/len1
-    qqqqq=data_name.iloc[999,1:]
-    turnover=np.mean(qqqqq)
+    turnover_quarter=data_name.iloc[999,1:]
+    turnover=np.mean(turnover_quarter)
+
+#turnvoer에 2% 곱해서 거래비용 계산하기
+#첫기에는 거래비용이 100%이다
+turnover_temp = pd.DataFrame(np.ones((1,1)))
+turnover_quarter = pd.DataFrame(turnover_quarter).transpose().reset_index(drop=True)
+turnover_quarter = pd.concat([turnover_temp,turnover_quarter],axis=1)
+turnover_quarter = turnover_quarter * 0.015
+return_diff = return_data - np.tile(turnover_quarter,(5,1))
+return_transaction_cost_final=np.product(return_diff,axis=1)
+
+
+
+
 
 #승률
 diff = return_data - np.tile(kospi_quarter,(5,1))
@@ -280,5 +318,7 @@ for n in range(1,65):
     group_data_sum = np.sum(group_data_count[2*n+1],axis=0)
     group_data_count[2*n+1] = group_data_count[2*n+1]/group_data_sum
     
-        
+for i in range(0,16):
+    portfolio_cash_rtn[i] = np.sum(result_cash[2*i+1])/len(result_cash[2*i+1][result_cash[2*i+1].notnull()])
+      
 
