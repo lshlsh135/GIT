@@ -197,7 +197,7 @@ for n in range(3,68):
     result = pd.concat([data, data1, data2, data3], axis = 1)
     
     # np.nanmean : nan 값 포함해서 평균 내기!!
-    result = result.assign(z_score=np.nanmean(result.iloc[:,[12,13,14]],axis=1))
+    result = result.assign(z_score=np.nanmean(result.iloc[:,[15,16,17]],axis=1))
 #    result_temp = result
 
     
@@ -261,7 +261,7 @@ for n in range(3,68):
         
     
     #동일가중
-    return_data.iloc[0,n-3]=np.mean(result['return'])
+#    return_data.iloc[0,n-3]=np.mean(result['return'])
 
     #월별 수익률 구하기
     result = result.assign(gross_return_2 = result['return_month1']*result['return_month2'])
@@ -271,8 +271,10 @@ for n in range(3,68):
     return_month_data[3*(n-3)] = np.mean(result['return_month1'])
     return_month_data[3*(n-3)+1] = np.mean(result['gross_return_2'])/return_month_data[3*(n-3)]
     return_month_data[3*(n-3)+2] = np.mean(result['return'])/np.mean(result['gross_return_2'])
-#시총가중
-#    return_data.iloc[0,n-3]=np.sum(result[14]*result['market_weight2'])
+
+    #시총가중
+    return_data.iloc[0,n-3]=np.sum(result['return']*result['market_weight2'])
+
     data_name[n-3]=result['name'].reset_index(drop=True)
     #섹터별 비중 구함
     sector_data[[2*(n-3),2*(n-3)+1]]=result.groupby('sector').size().reset_index(drop=False)
@@ -304,7 +306,7 @@ for n in range(3,67):
 turnover_temp = pd.DataFrame(np.ones((1,1)))
 turnover_quarter = pd.DataFrame(turnover_quarter).transpose().reset_index(drop=True)
 turnover_quarter = pd.concat([turnover_temp,turnover_quarter],axis=1)
-turnover_quarter = turnover_quarter * 0.02
+turnover_quarter = turnover_quarter * 0.01
 return_diff = return_data - np.tile(turnover_quarter,(5,1))
 return_transaction_cost_final=np.product(return_diff,axis=1)
 

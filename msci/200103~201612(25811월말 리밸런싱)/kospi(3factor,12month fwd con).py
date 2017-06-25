@@ -170,7 +170,7 @@ for n in range(3,68):
     result = pd.concat([data, data1, data2, data3], axis = 1)
     
     # np.nanmean : nan 값 포함해서 평균 내기!!
-    result = result.assign(z_score=np.nanmean(result.iloc[:,[12,13,14]],axis=1))
+    result = result.assign(z_score=np.nanmean(result.iloc[:,[15,16,17]],axis=1))
 #    result_temp = result
 
     
@@ -269,7 +269,7 @@ for n in range(3,67):
 turnover_temp = pd.DataFrame(np.ones((1,1)))
 turnover_quarter = pd.DataFrame(turnover_quarter).transpose().reset_index(drop=True)
 turnover_quarter = pd.concat([turnover_temp,turnover_quarter],axis=1)
-turnover_quarter = turnover_quarter * 0.015
+turnover_quarter = turnover_quarter * 0.01
 return_diff = return_data - np.tile(turnover_quarter,(5,1))
 return_transaction_cost_final=np.product(return_diff,axis=1)
 

@@ -173,7 +173,7 @@ for n in range(3,69):
     result = pd.concat([data, data1, data2, data3], axis = 1)
     
     # np.nanmean : nan 값 포함해서 평균 내기!!
-    result = result.assign(z_score=np.nanmean(result.iloc[:,[10,11,12]],axis=1))
+    result = result.assign(z_score=np.nanmean(result.iloc[:,[12,13,14]],axis=1))
 #    result_temp = result
 
     
