@@ -261,7 +261,7 @@ for n in range(3,68):
         
     
     #동일가중
-#    return_data.iloc[0,n-3]=np.mean(result['return'])
+    return_data.iloc[0,n-3]=np.mean(result['return'])
 
     #월별 수익률 구하기
     result = result.assign(gross_return_2 = result['return_month1']*result['return_month2'])
@@ -273,7 +273,7 @@ for n in range(3,68):
     return_month_data[3*(n-3)+2] = np.mean(result['return'])/np.mean(result['gross_return_2'])
 
     #시총가중
-    return_data.iloc[0,n-3]=np.sum(result['return']*result['market_weight2'])
+#    return_data.iloc[0,n-3]=np.sum(result['return']*result['market_weight2'])
 
     data_name[n-3]=result['name'].reset_index(drop=True)
     #섹터별 비중 구함
