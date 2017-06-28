@@ -185,63 +185,502 @@ for n in range(3,68):
         result_IT =result_IT[result_IT['z_score'].notnull()]
     
     
-    #IT 섹터
-    data_IT = data[data['sector']=="IT"]
-    # per, pbr, div_yield 구할때는 전체 시가총액을 사용,
-    # 시총비중 구할떄는 free-float
-    data_IT['size_FIF_wisefn']=data_IT['size_FIF_wisefn']/1000    #size 단위 thousand
-    data_IT['1/pbr']=data_IT['equity']/data_IT['size']
-    data_IT['1/per']=data_IT['ni_12fw']/data_IT['size']
-    data_IT['div_yield']=data_IT['cash_div']/data_IT['size']
+    #건강관리 섹터
+    if np.sum(data['sector']=='건강관리')>0:
+        data_건강관리 = data[data['sector']=='건강관리']
+        # per, pbr, div_yield 구할때는 전체 시가총액을 사용,
+        # 시총비중 구할떄는 free-float
+        data_건강관리['size_FIF_wisefn']=data_건강관리['size_FIF_wisefn']/1000    #size 단위 thousand
+        data_건강관리['1/pbr']=data_건강관리['equity']/data_건강관리['size']
+        data_건강관리['1/per']=data_건강관리['ni_12fw']/data_건강관리['size']
+        data_건강관리['div_yield']=data_건강관리['cash_div']/data_건강관리['size']
+        
+        # inf, -inf 값들을 NAN 값으로 변경 (그래야 한번에 제거 가능)
+        data_건강관리_건강관리 = data_건강관리.replace([np.inf, -np.inf],np.nan)  
+        
+        # Null 값 제거
+        data_건강관리_per = data_건강관리[data_건강관리['1/per'].notnull()]
+        data_건강관리_pbr = data_건강관리[data_건강관리['1/pbr'].notnull()]
+        data_건강관리_div = data_건강관리[data_건강관리['div_yield'].notnull()]
     
-    # inf, -inf 값들을 NAN 값으로 변경 (그래야 한번에 제거 가능)
-    data_IT_IT = data_IT.replace([np.inf, -np.inf],np.nan)  
     
-    # Null 값 제거
-    data_IT_per = data_IT[data_IT['1/per'].notnull()]
-    data_IT_pbr = data_IT[data_IT['1/pbr'].notnull()]
-    data_IT_div = data_IT[data_IT['div_yield'].notnull()]
-
-
-    # 시가총액비중 구함 
-    data_IT_pbr_cap = np.sum(data_IT_pbr['size_FIF_wisefn'])
-    data_IT_per_cap = np.sum(data_IT_per['size_FIF_wisefn'])
-    data_IT_div_cap = np.sum(data_IT_div['size_FIF_wisefn'])
-
-    data_IT_pbr = data_IT_pbr.assign(market_weight=data_IT_pbr['size_FIF_wisefn']/data_IT_pbr_cap)
-    data_IT_per = data_IT_per.assign(market_weight=data_IT_per['size_FIF_wisefn']/data_IT_per_cap)
-    data_IT_div = data_IT_div.assign(market_weight=data_IT_div['size_FIF_wisefn']/data_IT_div_cap)
+        # 시가총액비중 구함 
+        data_건강관리_pbr_cap = np.sum(data_건강관리_pbr['size_FIF_wisefn'])
+        data_건강관리_per_cap = np.sum(data_건강관리_per['size_FIF_wisefn'])
+        data_건강관리_div_cap = np.sum(data_건강관리_div['size_FIF_wisefn'])
     
-    # 시총가중 평균 
-    mu_inv_pbr=np.sum(data_IT_pbr['1/pbr']*data_IT_pbr['market_weight'])
-    mu_inv_per=np.sum(data_IT_per['1/per']*data_IT_per['market_weight'])
-    mu_inv_div=np.sum(data_IT_div['div_yield']*data_IT_div['market_weight'])
+        data_건강관리_pbr = data_건강관리_pbr.assign(market_weight=data_건강관리_pbr['size_FIF_wisefn']/data_건강관리_pbr_cap)
+        data_건강관리_per = data_건강관리_per.assign(market_weight=data_건강관리_per['size_FIF_wisefn']/data_건강관리_per_cap)
+        data_건강관리_div = data_건강관리_div.assign(market_weight=data_건강관리_div['size_FIF_wisefn']/data_건강관리_div_cap)
+        
+        # 시총가중 평균 
+        mu_inv_pbr=np.sum(data_건강관리_pbr['1/pbr']*data_건강관리_pbr['market_weight'])
+        mu_inv_per=np.sum(data_건강관리_per['1/per']*data_건강관리_per['market_weight'])
+        mu_inv_div=np.sum(data_건강관리_div['div_yield']*data_건강관리_div['market_weight'])
+        
+        # 시총 가중 표준편자
+        std_inv_pbr=np.sqrt(np.sum(np.square(data_건강관리_pbr['1/pbr']-mu_inv_pbr)*data_건강관리_pbr['market_weight']))
+        std_inv_per=np.sqrt(np.sum(np.square(data_건강관리_per['1/per']-mu_inv_per)*data_건강관리_per['market_weight']))
+        std_inv_div=np.sqrt(np.sum(np.square(data_건강관리_div['div_yield']-mu_inv_div)*data_건강관리_div['market_weight']))
+        
+        data_건강관리1=(data_건강관리_pbr['1/pbr']-mu_inv_pbr)/std_inv_pbr
+        data_건강관리1.name= 'pbr_z'
+        data_건강관리2=(data_건강관리_per['1/per']-mu_inv_per)/std_inv_per
+        data_건강관리2.name= 'per_z'
+        data_건강관리3=(data_건강관리_div['div_yield']-mu_inv_div)/std_inv_div
+        data_건강관리3.name= 'div_z'
+              
+        result_건강관리 = pd.concat([data_건강관리, data_건강관리1, data_건강관리2, data_건강관리3], axis = 1)
+        
+        # np.nanmean : nan 값 포함해서 평균 내기!!
+        result_건강관리 = result_건강관리.assign(z_score=np.nanmean(result_건강관리.iloc[:,[15,16,17]],axis=1))
+    #    result_temp = result
     
-    # 시총 가중 표준편자
-    std_inv_pbr=np.sqrt(np.sum(np.square(data_IT_pbr['1/pbr']-mu_inv_pbr)*data_IT_pbr['market_weight']))
-    std_inv_per=np.sqrt(np.sum(np.square(data_IT_per['1/per']-mu_inv_per)*data_IT_per['market_weight']))
-    std_inv_div=np.sqrt(np.sum(np.square(data_IT_div['div_yield']-mu_inv_div)*data_IT_div['market_weight']))
+        
+        # z_score > 0 인것이 가치주라고 msci에서 하고있음
+        result_건강관리 =result_건강관리[result_건강관리['z_score'].notnull()]
+        
+       #경기관련소비재 섹터
+    if np.sum(data['sector']=='경기관련소비재')>0:
+        data_경기관련소비재 = data[data['sector']=='경기관련소비재']
+        # per, pbr, div_yield 구할때는 전체 시가총액을 사용,
+        # 시총비중 구할떄는 free-float
+        data_경기관련소비재['size_FIF_wisefn']=data_경기관련소비재['size_FIF_wisefn']/1000    #size 단위 thousand
+        data_경기관련소비재['1/pbr']=data_경기관련소비재['equity']/data_경기관련소비재['size']
+        data_경기관련소비재['1/per']=data_경기관련소비재['ni_12fw']/data_경기관련소비재['size']
+        data_경기관련소비재['div_yield']=data_경기관련소비재['cash_div']/data_경기관련소비재['size']
+        
+        # inf, -inf 값들을 NAN 값으로 변경 (그래야 한번에 제거 가능)
+        data_경기관련소비재_경기관련소비재 = data_경기관련소비재.replace([np.inf, -np.inf],np.nan)  
+        
+        # Null 값 제거
+        data_경기관련소비재_per = data_경기관련소비재[data_경기관련소비재['1/per'].notnull()]
+        data_경기관련소비재_pbr = data_경기관련소비재[data_경기관련소비재['1/pbr'].notnull()]
+        data_경기관련소비재_div = data_경기관련소비재[data_경기관련소비재['div_yield'].notnull()]
     
-    data_IT1=(data_IT_pbr['1/pbr']-mu_inv_pbr)/std_inv_pbr
-    data_IT1.name= 'pbr_z'
-    data_IT2=(data_IT_per['1/per']-mu_inv_per)/std_inv_per
-    data_IT2.name= 'per_z'
-    data_IT3=(data_IT_div['div_yield']-mu_inv_div)/std_inv_div
-    data_IT3.name= 'div_z'
+    
+        # 시가총액비중 구함 
+        data_경기관련소비재_pbr_cap = np.sum(data_경기관련소비재_pbr['size_FIF_wisefn'])
+        data_경기관련소비재_per_cap = np.sum(data_경기관련소비재_per['size_FIF_wisefn'])
+        data_경기관련소비재_div_cap = np.sum(data_경기관련소비재_div['size_FIF_wisefn'])
+    
+        data_경기관련소비재_pbr = data_경기관련소비재_pbr.assign(market_weight=data_경기관련소비재_pbr['size_FIF_wisefn']/data_경기관련소비재_pbr_cap)
+        data_경기관련소비재_per = data_경기관련소비재_per.assign(market_weight=data_경기관련소비재_per['size_FIF_wisefn']/data_경기관련소비재_per_cap)
+        data_경기관련소비재_div = data_경기관련소비재_div.assign(market_weight=data_경기관련소비재_div['size_FIF_wisefn']/data_경기관련소비재_div_cap)
+        
+        # 시총가중 평균 
+        mu_inv_pbr=np.sum(data_경기관련소비재_pbr['1/pbr']*data_경기관련소비재_pbr['market_weight'])
+        mu_inv_per=np.sum(data_경기관련소비재_per['1/per']*data_경기관련소비재_per['market_weight'])
+        mu_inv_div=np.sum(data_경기관련소비재_div['div_yield']*data_경기관련소비재_div['market_weight'])
+        
+        # 시총 가중 표준편자
+        std_inv_pbr=np.sqrt(np.sum(np.square(data_경기관련소비재_pbr['1/pbr']-mu_inv_pbr)*data_경기관련소비재_pbr['market_weight']))
+        std_inv_per=np.sqrt(np.sum(np.square(data_경기관련소비재_per['1/per']-mu_inv_per)*data_경기관련소비재_per['market_weight']))
+        std_inv_div=np.sqrt(np.sum(np.square(data_경기관련소비재_div['div_yield']-mu_inv_div)*data_경기관련소비재_div['market_weight']))
+        
+        data_경기관련소비재1=(data_경기관련소비재_pbr['1/pbr']-mu_inv_pbr)/std_inv_pbr
+        data_경기관련소비재1.name= 'pbr_z'
+        data_경기관련소비재2=(data_경기관련소비재_per['1/per']-mu_inv_per)/std_inv_per
+        data_경기관련소비재2.name= 'per_z'
+        data_경기관련소비재3=(data_경기관련소비재_div['div_yield']-mu_inv_div)/std_inv_div
+        data_경기관련소비재3.name= 'div_z'
+              
+        result_경기관련소비재 = pd.concat([data_경기관련소비재, data_경기관련소비재1, data_경기관련소비재2, data_경기관련소비재3], axis = 1)
+        
+        # np.nanmean : nan 값 포함해서 평균 내기!!
+        result_경기관련소비재 = result_경기관련소비재.assign(z_score=np.nanmean(result_경기관련소비재.iloc[:,[15,16,17]],axis=1))
+    #    result_temp = result
+    
+        
+        # z_score > 0 인것이 가치주라고 msci에서 하고있음
+        result_경기관련소비재 =result_경기관련소비재[result_경기관련소비재['z_score'].notnull()]
+        
+    #금융 섹터
+    if np.sum(data['sector']=='금융')>0:
+        data_금융 = data[data['sector']=='금융']
+        # per, pbr, div_yield 구할때는 전체 시가총액을 사용,
+        # 시총비중 구할떄는 free-float
+        data_금융['size_FIF_wisefn']=data_금융['size_FIF_wisefn']/1000    #size 단위 thousand
+        data_금융['1/pbr']=data_금융['equity']/data_금융['size']
+        data_금융['1/per']=data_금융['ni_12fw']/data_금융['size']
+        data_금융['div_yield']=data_금융['cash_div']/data_금융['size']
+        
+        # inf, -inf 값들을 NAN 값으로 변경 (그래야 한번에 제거 가능)
+        data_금융_금융 = data_금융.replace([np.inf, -np.inf],np.nan)  
+        
+        # Null 값 제거
+        data_금융_per = data_금융[data_금융['1/per'].notnull()]
+        data_금융_pbr = data_금융[data_금융['1/pbr'].notnull()]
+        data_금융_div = data_금융[data_금융['div_yield'].notnull()]
+    
+    
+        # 시가총액비중 구함 
+        data_금융_pbr_cap = np.sum(data_금융_pbr['size_FIF_wisefn'])
+        data_금융_per_cap = np.sum(data_금융_per['size_FIF_wisefn'])
+        data_금융_div_cap = np.sum(data_금융_div['size_FIF_wisefn'])
+    
+        data_금융_pbr = data_금융_pbr.assign(market_weight=data_금융_pbr['size_FIF_wisefn']/data_금융_pbr_cap)
+        data_금융_per = data_금융_per.assign(market_weight=data_금융_per['size_FIF_wisefn']/data_금융_per_cap)
+        data_금융_div = data_금융_div.assign(market_weight=data_금융_div['size_FIF_wisefn']/data_금융_div_cap)
+        
+        # 시총가중 평균 
+        mu_inv_pbr=np.sum(data_금융_pbr['1/pbr']*data_금융_pbr['market_weight'])
+        mu_inv_per=np.sum(data_금융_per['1/per']*data_금융_per['market_weight'])
+        mu_inv_div=np.sum(data_금융_div['div_yield']*data_금융_div['market_weight'])
+        
+        # 시총 가중 표준편자
+        std_inv_pbr=np.sqrt(np.sum(np.square(data_금융_pbr['1/pbr']-mu_inv_pbr)*data_금융_pbr['market_weight']))
+        std_inv_per=np.sqrt(np.sum(np.square(data_금융_per['1/per']-mu_inv_per)*data_금융_per['market_weight']))
+        std_inv_div=np.sqrt(np.sum(np.square(data_금융_div['div_yield']-mu_inv_div)*data_금융_div['market_weight']))
+        
+        data_금융1=(data_금융_pbr['1/pbr']-mu_inv_pbr)/std_inv_pbr
+        data_금융1.name= 'pbr_z'
+        data_금융2=(data_금융_per['1/per']-mu_inv_per)/std_inv_per
+        data_금융2.name= 'per_z'
+        data_금융3=(data_금융_div['div_yield']-mu_inv_div)/std_inv_div
+        data_금융3.name= 'div_z'
+              
+        result_금융 = pd.concat([data_금융, data_금융1, data_금융2, data_금융3], axis = 1)
+        
+        # np.nanmean : nan 값 포함해서 평균 내기!!
+        result_금융 = result_금융.assign(z_score=np.nanmean(result_금융.iloc[:,[15,16,17]],axis=1))
+    #    result_temp = result
+    
+        
+        # z_score > 0 인것이 가치주라고 msci에서 하고있음
+        result_금융 =result_금융[result_금융['z_score'].notnull()]
+       
+    #산업재 섹터
+    if np.sum(data['sector']=='산업재')>0:
+        data_산업재 = data[data['sector']=='산업재']
+        # per, pbr, div_yield 구할때는 전체 시가총액을 사용,
+        # 시총비중 구할떄는 free-float
+        data_산업재['size_FIF_wisefn']=data_산업재['size_FIF_wisefn']/1000    #size 단위 thousand
+        data_산업재['1/pbr']=data_산업재['equity']/data_산업재['size']
+        data_산업재['1/per']=data_산업재['ni_12fw']/data_산업재['size']
+        data_산업재['div_yield']=data_산업재['cash_div']/data_산업재['size']
+        
+        # inf, -inf 값들을 NAN 값으로 변경 (그래야 한번에 제거 가능)
+        data_산업재_산업재 = data_산업재.replace([np.inf, -np.inf],np.nan)  
+        
+        # Null 값 제거
+        data_산업재_per = data_산업재[data_산업재['1/per'].notnull()]
+        data_산업재_pbr = data_산업재[data_산업재['1/pbr'].notnull()]
+        data_산업재_div = data_산업재[data_산업재['div_yield'].notnull()]
+    
+    
+        # 시가총액비중 구함 
+        data_산업재_pbr_cap = np.sum(data_산업재_pbr['size_FIF_wisefn'])
+        data_산업재_per_cap = np.sum(data_산업재_per['size_FIF_wisefn'])
+        data_산업재_div_cap = np.sum(data_산업재_div['size_FIF_wisefn'])
+    
+        data_산업재_pbr = data_산업재_pbr.assign(market_weight=data_산업재_pbr['size_FIF_wisefn']/data_산업재_pbr_cap)
+        data_산업재_per = data_산업재_per.assign(market_weight=data_산업재_per['size_FIF_wisefn']/data_산업재_per_cap)
+        data_산업재_div = data_산업재_div.assign(market_weight=data_산업재_div['size_FIF_wisefn']/data_산업재_div_cap)
+        
+        # 시총가중 평균 
+        mu_inv_pbr=np.sum(data_산업재_pbr['1/pbr']*data_산업재_pbr['market_weight'])
+        mu_inv_per=np.sum(data_산업재_per['1/per']*data_산업재_per['market_weight'])
+        mu_inv_div=np.sum(data_산업재_div['div_yield']*data_산업재_div['market_weight'])
+        
+        # 시총 가중 표준편자
+        std_inv_pbr=np.sqrt(np.sum(np.square(data_산업재_pbr['1/pbr']-mu_inv_pbr)*data_산업재_pbr['market_weight']))
+        std_inv_per=np.sqrt(np.sum(np.square(data_산업재_per['1/per']-mu_inv_per)*data_산업재_per['market_weight']))
+        std_inv_div=np.sqrt(np.sum(np.square(data_산업재_div['div_yield']-mu_inv_div)*data_산업재_div['market_weight']))
+        
+        data_산업재1=(data_산업재_pbr['1/pbr']-mu_inv_pbr)/std_inv_pbr
+        data_산업재1.name= 'pbr_z'
+        data_산업재2=(data_산업재_per['1/per']-mu_inv_per)/std_inv_per
+        data_산업재2.name= 'per_z'
+        data_산업재3=(data_산업재_div['div_yield']-mu_inv_div)/std_inv_div
+        data_산업재3.name= 'div_z'
+              
+        result_산업재 = pd.concat([data_산업재, data_산업재1, data_산업재2, data_산업재3], axis = 1)
+        
+        # np.nanmean : nan 값 포함해서 평균 내기!!
+        result_산업재 = result_산업재.assign(z_score=np.nanmean(result_산업재.iloc[:,[15,16,17]],axis=1))
+    #    result_temp = result
+    
+        
+        # z_score > 0 인것이 가치주라고 msci에서 하고있음
+        result_산업재 =result_산업재[result_산업재['z_score'].notnull()]
+        
+    #소재 섹터
+    if np.sum(data['sector']=='소재')>0:
+        data_소재 = data[data['sector']=='소재']
+        # per, pbr, div_yield 구할때는 전체 시가총액을 사용,
+        # 시총비중 구할떄는 free-float
+        data_소재['size_FIF_wisefn']=data_소재['size_FIF_wisefn']/1000    #size 단위 thousand
+        data_소재['1/pbr']=data_소재['equity']/data_소재['size']
+        data_소재['1/per']=data_소재['ni_12fw']/data_소재['size']
+        data_소재['div_yield']=data_소재['cash_div']/data_소재['size']
+        
+        # inf, -inf 값들을 NAN 값으로 변경 (그래야 한번에 제거 가능)
+        data_소재_소재 = data_소재.replace([np.inf, -np.inf],np.nan)  
+        
+        # Null 값 제거
+        data_소재_per = data_소재[data_소재['1/per'].notnull()]
+        data_소재_pbr = data_소재[data_소재['1/pbr'].notnull()]
+        data_소재_div = data_소재[data_소재['div_yield'].notnull()]
+    
+    
+        # 시가총액비중 구함 
+        data_소재_pbr_cap = np.sum(data_소재_pbr['size_FIF_wisefn'])
+        data_소재_per_cap = np.sum(data_소재_per['size_FIF_wisefn'])
+        data_소재_div_cap = np.sum(data_소재_div['size_FIF_wisefn'])
+    
+        data_소재_pbr = data_소재_pbr.assign(market_weight=data_소재_pbr['size_FIF_wisefn']/data_소재_pbr_cap)
+        data_소재_per = data_소재_per.assign(market_weight=data_소재_per['size_FIF_wisefn']/data_소재_per_cap)
+        data_소재_div = data_소재_div.assign(market_weight=data_소재_div['size_FIF_wisefn']/data_소재_div_cap)
+        
+        # 시총가중 평균 
+        mu_inv_pbr=np.sum(data_소재_pbr['1/pbr']*data_소재_pbr['market_weight'])
+        mu_inv_per=np.sum(data_소재_per['1/per']*data_소재_per['market_weight'])
+        mu_inv_div=np.sum(data_소재_div['div_yield']*data_소재_div['market_weight'])
+        
+        # 시총 가중 표준편자
+        std_inv_pbr=np.sqrt(np.sum(np.square(data_소재_pbr['1/pbr']-mu_inv_pbr)*data_소재_pbr['market_weight']))
+        std_inv_per=np.sqrt(np.sum(np.square(data_소재_per['1/per']-mu_inv_per)*data_소재_per['market_weight']))
+        std_inv_div=np.sqrt(np.sum(np.square(data_소재_div['div_yield']-mu_inv_div)*data_소재_div['market_weight']))
+        
+        data_소재1=(data_소재_pbr['1/pbr']-mu_inv_pbr)/std_inv_pbr
+        data_소재1.name= 'pbr_z'
+        data_소재2=(data_소재_per['1/per']-mu_inv_per)/std_inv_per
+        data_소재2.name= 'per_z'
+        data_소재3=(data_소재_div['div_yield']-mu_inv_div)/std_inv_div
+        data_소재3.name= 'div_z'
+              
+        result_소재 = pd.concat([data_소재, data_소재1, data_소재2, data_소재3], axis = 1)
+        
+        # np.nanmean : nan 값 포함해서 평균 내기!!
+        result_소재 = result_소재.assign(z_score=np.nanmean(result_소재.iloc[:,[15,16,17]],axis=1))
+    #    result_temp = result
+    
+        
+        # z_score > 0 인것이 가치주라고 msci에서 하고있음
+        result_소재 =result_소재[result_소재['z_score'].notnull()]
           
-    result_IT = pd.concat([data_IT, data_IT1, data_IT2, data_IT3], axis = 1)
+    #에너지 섹터
+    if np.sum(data['sector']=='에너지')>0:
+        data_에너지 = data[data['sector']=='에너지']
+        # per, pbr, div_yield 구할때는 전체 시가총액을 사용,
+        # 시총비중 구할떄는 free-float
+        data_에너지['size_FIF_wisefn']=data_에너지['size_FIF_wisefn']/1000    #size 단위 thousand
+        data_에너지['1/pbr']=data_에너지['equity']/data_에너지['size']
+        data_에너지['1/per']=data_에너지['ni_12fw']/data_에너지['size']
+        data_에너지['div_yield']=data_에너지['cash_div']/data_에너지['size']
+        
+        # inf, -inf 값들을 NAN 값으로 변경 (그래야 한번에 제거 가능)
+        data_에너지_에너지 = data_에너지.replace([np.inf, -np.inf],np.nan)  
+        
+        # Null 값 제거
+        data_에너지_per = data_에너지[data_에너지['1/per'].notnull()]
+        data_에너지_pbr = data_에너지[data_에너지['1/pbr'].notnull()]
+        data_에너지_div = data_에너지[data_에너지['div_yield'].notnull()]
     
-    # np.nanmean : nan 값 포함해서 평균 내기!!
-    result_IT = result_IT.assign(z_score=np.nanmean(result_IT.iloc[:,[15,16,17]],axis=1))
-#    result_temp = result
-
     
-    # z_score > 0 인것이 가치주라고 msci에서 하고있음
-    result_IT =result_IT[result_IT['z_score'].notnull()]
+        # 시가총액비중 구함 
+        data_에너지_pbr_cap = np.sum(data_에너지_pbr['size_FIF_wisefn'])
+        data_에너지_per_cap = np.sum(data_에너지_per['size_FIF_wisefn'])
+        data_에너지_div_cap = np.sum(data_에너지_div['size_FIF_wisefn'])
+    
+        data_에너지_pbr = data_에너지_pbr.assign(market_weight=data_에너지_pbr['size_FIF_wisefn']/data_에너지_pbr_cap)
+        data_에너지_per = data_에너지_per.assign(market_weight=data_에너지_per['size_FIF_wisefn']/data_에너지_per_cap)
+        data_에너지_div = data_에너지_div.assign(market_weight=data_에너지_div['size_FIF_wisefn']/data_에너지_div_cap)
+        
+        # 시총가중 평균 
+        mu_inv_pbr=np.sum(data_에너지_pbr['1/pbr']*data_에너지_pbr['market_weight'])
+        mu_inv_per=np.sum(data_에너지_per['1/per']*data_에너지_per['market_weight'])
+        mu_inv_div=np.sum(data_에너지_div['div_yield']*data_에너지_div['market_weight'])
+        
+        # 시총 가중 표준편자
+        std_inv_pbr=np.sqrt(np.sum(np.square(data_에너지_pbr['1/pbr']-mu_inv_pbr)*data_에너지_pbr['market_weight']))
+        std_inv_per=np.sqrt(np.sum(np.square(data_에너지_per['1/per']-mu_inv_per)*data_에너지_per['market_weight']))
+        std_inv_div=np.sqrt(np.sum(np.square(data_에너지_div['div_yield']-mu_inv_div)*data_에너지_div['market_weight']))
+        
+        data_에너지1=(data_에너지_pbr['1/pbr']-mu_inv_pbr)/std_inv_pbr
+        data_에너지1.name= 'pbr_z'
+        data_에너지2=(data_에너지_per['1/per']-mu_inv_per)/std_inv_per
+        data_에너지2.name= 'per_z'
+        data_에너지3=(data_에너지_div['div_yield']-mu_inv_div)/std_inv_div
+        data_에너지3.name= 'div_z'
+              
+        result_에너지 = pd.concat([data_에너지, data_에너지1, data_에너지2, data_에너지3], axis = 1)
+        
+        # np.nanmean : nan 값 포함해서 평균 내기!!
+        result_에너지 = result_에너지.assign(z_score=np.nanmean(result_에너지.iloc[:,[15,16,17]],axis=1))
+    #    result_temp = result
+    
+        
+        # z_score > 0 인것이 가치주라고 msci에서 하고있음
+        result_에너지 =result_에너지[result_에너지['z_score'].notnull()]
+         
+    #유틸리티 섹터
+    if np.sum(data['sector']=='유틸리티')>0:
+        data_유틸리티 = data[data['sector']=='유틸리티']
+        # per, pbr, div_yield 구할때는 전체 시가총액을 사용,
+        # 시총비중 구할떄는 free-float
+        data_유틸리티['size_FIF_wisefn']=data_유틸리티['size_FIF_wisefn']/1000    #size 단위 thousand
+        data_유틸리티['1/pbr']=data_유틸리티['equity']/data_유틸리티['size']
+        data_유틸리티['1/per']=data_유틸리티['ni_12fw']/data_유틸리티['size']
+        data_유틸리티['div_yield']=data_유틸리티['cash_div']/data_유틸리티['size']
+        
+        # inf, -inf 값들을 NAN 값으로 변경 (그래야 한번에 제거 가능)
+        data_유틸리티_유틸리티 = data_유틸리티.replace([np.inf, -np.inf],np.nan)  
+        
+        # Null 값 제거
+        data_유틸리티_per = data_유틸리티[data_유틸리티['1/per'].notnull()]
+        data_유틸리티_pbr = data_유틸리티[data_유틸리티['1/pbr'].notnull()]
+        data_유틸리티_div = data_유틸리티[data_유틸리티['div_yield'].notnull()]
     
     
-     
+        # 시가총액비중 구함 
+        data_유틸리티_pbr_cap = np.sum(data_유틸리티_pbr['size_FIF_wisefn'])
+        data_유틸리티_per_cap = np.sum(data_유틸리티_per['size_FIF_wisefn'])
+        data_유틸리티_div_cap = np.sum(data_유틸리티_div['size_FIF_wisefn'])
     
+        data_유틸리티_pbr = data_유틸리티_pbr.assign(market_weight=data_유틸리티_pbr['size_FIF_wisefn']/data_유틸리티_pbr_cap)
+        data_유틸리티_per = data_유틸리티_per.assign(market_weight=data_유틸리티_per['size_FIF_wisefn']/data_유틸리티_per_cap)
+        data_유틸리티_div = data_유틸리티_div.assign(market_weight=data_유틸리티_div['size_FIF_wisefn']/data_유틸리티_div_cap)
+        
+        # 시총가중 평균 
+        mu_inv_pbr=np.sum(data_유틸리티_pbr['1/pbr']*data_유틸리티_pbr['market_weight'])
+        mu_inv_per=np.sum(data_유틸리티_per['1/per']*data_유틸리티_per['market_weight'])
+        mu_inv_div=np.sum(data_유틸리티_div['div_yield']*data_유틸리티_div['market_weight'])
+        
+        # 시총 가중 표준편자
+        std_inv_pbr=np.sqrt(np.sum(np.square(data_유틸리티_pbr['1/pbr']-mu_inv_pbr)*data_유틸리티_pbr['market_weight']))
+        std_inv_per=np.sqrt(np.sum(np.square(data_유틸리티_per['1/per']-mu_inv_per)*data_유틸리티_per['market_weight']))
+        std_inv_div=np.sqrt(np.sum(np.square(data_유틸리티_div['div_yield']-mu_inv_div)*data_유틸리티_div['market_weight']))
+        
+        data_유틸리티1=(data_유틸리티_pbr['1/pbr']-mu_inv_pbr)/std_inv_pbr
+        data_유틸리티1.name= 'pbr_z'
+        data_유틸리티2=(data_유틸리티_per['1/per']-mu_inv_per)/std_inv_per
+        data_유틸리티2.name= 'per_z'
+        data_유틸리티3=(data_유틸리티_div['div_yield']-mu_inv_div)/std_inv_div
+        data_유틸리티3.name= 'div_z'
+              
+        result_유틸리티 = pd.concat([data_유틸리티, data_유틸리티1, data_유틸리티2, data_유틸리티3], axis = 1)
+        
+        # np.nanmean : nan 값 포함해서 평균 내기!!
+        result_유틸리티 = result_유틸리티.assign(z_score=np.nanmean(result_유틸리티.iloc[:,[15,16,17]],axis=1))
+    #    result_temp = result
+    
+        
+        # z_score > 0 인것이 가치주라고 msci에서 하고있음
+        result_유틸리티 =result_유틸리티[result_유틸리티['z_score'].notnull()]
+          
+    #전기통신서비스 섹터
+    if np.sum(data['sector']=='전기통신서비스')>0:
+        data_정기통신서비스 = data[data['sector']=='전기통신서비스']
+        # per, pbr, div_yield 구할때는 전체 시가총액을 사용,
+        # 시총비중 구할떄는 free-float
+        data_정기통신서비스['size_FIF_wisefn']=data_정기통신서비스['size_FIF_wisefn']/1000    #size 단위 thousand
+        data_정기통신서비스['1/pbr']=data_정기통신서비스['equity']/data_정기통신서비스['size']
+        data_정기통신서비스['1/per']=data_정기통신서비스['ni_12fw']/data_정기통신서비스['size']
+        data_정기통신서비스['div_yield']=data_정기통신서비스['cash_div']/data_정기통신서비스['size']
+        
+        # inf, -inf 값들을 NAN 값으로 변경 (그래야 한번에 제거 가능)
+        data_정기통신서비스_정기통신서비스 = data_정기통신서비스.replace([np.inf, -np.inf],np.nan)  
+        
+        # Null 값 제거
+        data_정기통신서비스_per = data_정기통신서비스[data_정기통신서비스['1/per'].notnull()]
+        data_정기통신서비스_pbr = data_정기통신서비스[data_정기통신서비스['1/pbr'].notnull()]
+        data_정기통신서비스_div = data_정기통신서비스[data_정기통신서비스['div_yield'].notnull()]
+    
+    
+        # 시가총액비중 구함 
+        data_정기통신서비스_pbr_cap = np.sum(data_정기통신서비스_pbr['size_FIF_wisefn'])
+        data_정기통신서비스_per_cap = np.sum(data_정기통신서비스_per['size_FIF_wisefn'])
+        data_정기통신서비스_div_cap = np.sum(data_정기통신서비스_div['size_FIF_wisefn'])
+    
+        data_정기통신서비스_pbr = data_정기통신서비스_pbr.assign(market_weight=data_정기통신서비스_pbr['size_FIF_wisefn']/data_정기통신서비스_pbr_cap)
+        data_정기통신서비스_per = data_정기통신서비스_per.assign(market_weight=data_정기통신서비스_per['size_FIF_wisefn']/data_정기통신서비스_per_cap)
+        data_정기통신서비스_div = data_정기통신서비스_div.assign(market_weight=data_정기통신서비스_div['size_FIF_wisefn']/data_정기통신서비스_div_cap)
+        
+        # 시총가중 평균 
+        mu_inv_pbr=np.sum(data_정기통신서비스_pbr['1/pbr']*data_정기통신서비스_pbr['market_weight'])
+        mu_inv_per=np.sum(data_정기통신서비스_per['1/per']*data_정기통신서비스_per['market_weight'])
+        mu_inv_div=np.sum(data_정기통신서비스_div['div_yield']*data_정기통신서비스_div['market_weight'])
+        
+        # 시총 가중 표준편자
+        std_inv_pbr=np.sqrt(np.sum(np.square(data_정기통신서비스_pbr['1/pbr']-mu_inv_pbr)*data_정기통신서비스_pbr['market_weight']))
+        std_inv_per=np.sqrt(np.sum(np.square(data_정기통신서비스_per['1/per']-mu_inv_per)*data_정기통신서비스_per['market_weight']))
+        std_inv_div=np.sqrt(np.sum(np.square(data_정기통신서비스_div['div_yield']-mu_inv_div)*data_정기통신서비스_div['market_weight']))
+        
+        data_정기통신서비스1=(data_정기통신서비스_pbr['1/pbr']-mu_inv_pbr)/std_inv_pbr
+        data_정기통신서비스1.name= 'pbr_z'
+        data_정기통신서비스2=(data_정기통신서비스_per['1/per']-mu_inv_per)/std_inv_per
+        data_정기통신서비스2.name= 'per_z'
+        data_정기통신서비스3=(data_정기통신서비스_div['div_yield']-mu_inv_div)/std_inv_div
+        data_정기통신서비스3.name= 'div_z'
+              
+        result_정기통신서비스 = pd.concat([data_정기통신서비스, data_정기통신서비스1, data_정기통신서비스2, data_정기통신서비스3], axis = 1)
+        
+        # np.nanmean : nan 값 포함해서 평균 내기!!
+        result_정기통신서비스 = result_정기통신서비스.assign(z_score=np.nanmean(result_정기통신서비스.iloc[:,[15,16,17]],axis=1))
+    #    result_temp = result
+    
+        
+        # z_score > 0 인것이 가치주라고 msci에서 하고있음
+        result_정기통신서비스 =result_정기통신서비스[result_정기통신서비스['z_score'].notnull()]
+        
+    #필수소비재 섹터
+    if np.sum(data['sector']=='필수소비재')>0:
+        data_필수소비재 = data[data['sector']=='필수소비재']
+        # per, pbr, div_yield 구할때는 전체 시가총액을 사용,
+        # 시총비중 구할떄는 free-float
+        data_필수소비재['size_FIF_wisefn']=data_필수소비재['size_FIF_wisefn']/1000    #size 단위 thousand
+        data_필수소비재['1/pbr']=data_필수소비재['equity']/data_필수소비재['size']
+        data_필수소비재['1/per']=data_필수소비재['ni_12fw']/data_필수소비재['size']
+        data_필수소비재['div_yield']=data_필수소비재['cash_div']/data_필수소비재['size']
+        
+        # inf, -inf 값들을 NAN 값으로 변경 (그래야 한번에 제거 가능)
+        data_필수소비재_필수소비재 = data_필수소비재.replace([np.inf, -np.inf],np.nan)  
+        
+        # Null 값 제거
+        data_필수소비재_per = data_필수소비재[data_필수소비재['1/per'].notnull()]
+        data_필수소비재_pbr = data_필수소비재[data_필수소비재['1/pbr'].notnull()]
+        data_필수소비재_div = data_필수소비재[data_필수소비재['div_yield'].notnull()]
+    
+    
+        # 시가총액비중 구함 
+        data_필수소비재_pbr_cap = np.sum(data_필수소비재_pbr['size_FIF_wisefn'])
+        data_필수소비재_per_cap = np.sum(data_필수소비재_per['size_FIF_wisefn'])
+        data_필수소비재_div_cap = np.sum(data_필수소비재_div['size_FIF_wisefn'])
+    
+        data_필수소비재_pbr = data_필수소비재_pbr.assign(market_weight=data_필수소비재_pbr['size_FIF_wisefn']/data_필수소비재_pbr_cap)
+        data_필수소비재_per = data_필수소비재_per.assign(market_weight=data_필수소비재_per['size_FIF_wisefn']/data_필수소비재_per_cap)
+        data_필수소비재_div = data_필수소비재_div.assign(market_weight=data_필수소비재_div['size_FIF_wisefn']/data_필수소비재_div_cap)
+        
+        # 시총가중 평균 
+        mu_inv_pbr=np.sum(data_필수소비재_pbr['1/pbr']*data_필수소비재_pbr['market_weight'])
+        mu_inv_per=np.sum(data_필수소비재_per['1/per']*data_필수소비재_per['market_weight'])
+        mu_inv_div=np.sum(data_필수소비재_div['div_yield']*data_필수소비재_div['market_weight'])
+        
+        # 시총 가중 표준편자
+        std_inv_pbr=np.sqrt(np.sum(np.square(data_필수소비재_pbr['1/pbr']-mu_inv_pbr)*data_필수소비재_pbr['market_weight']))
+        std_inv_per=np.sqrt(np.sum(np.square(data_필수소비재_per['1/per']-mu_inv_per)*data_필수소비재_per['market_weight']))
+        std_inv_div=np.sqrt(np.sum(np.square(data_필수소비재_div['div_yield']-mu_inv_div)*data_필수소비재_div['market_weight']))
+        
+        data_필수소비재1=(data_필수소비재_pbr['1/pbr']-mu_inv_pbr)/std_inv_pbr
+        data_필수소비재1.name= 'pbr_z'
+        data_필수소비재2=(data_필수소비재_per['1/per']-mu_inv_per)/std_inv_per
+        data_필수소비재2.name= 'per_z'
+        data_필수소비재3=(data_필수소비재_div['div_yield']-mu_inv_div)/std_inv_div
+        data_필수소비재3.name= 'div_z'
+              
+        result_필수소비재 = pd.concat([data_필수소비재, data_필수소비재1, data_필수소비재2, data_필수소비재3], axis = 1)
+        
+        # np.nanmean : nan 값 포함해서 평균 내기!!
+        result_필수소비재 = result_필수소비재.assign(z_score=np.nanmean(result_필수소비재.iloc[:,[15,16,17]],axis=1))
+    #    result_temp = result
+    
+        
+        # z_score > 0 인것이 가치주라고 msci에서 하고있음
+        result_필수소비재 =result_필수소비재[result_필수소비재['z_score'].notnull()]
+    
+    result = pd.concat([result_IT,result_건강관리,result_경기관련소비재,result_금융,result_산업재,result_소재,result_에너지,result_유틸리티,result_정기통신서비스,result_필수소비재],axis=0)
     
     
     
