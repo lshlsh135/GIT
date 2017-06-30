@@ -17,7 +17,7 @@ return_data = pd.DataFrame(return_data)
 monthly_date = pd.read_pickle('monthly_date')
 rtn_daily = pd.read_pickle('rtn_daily')
 
-n=9
+n=12
 beta_3_temp = pd.DataFrame(np.zeros((1,12)))
 for i in range(0,12):
     #df.columns.get_loc() 이걸 하면 column 위치를 알 수 있다!!
