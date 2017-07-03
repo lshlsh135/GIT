@@ -11,15 +11,16 @@ import numpy as np
 
 
 #rtn_monthly = pd.read_excel('A_trend_factor.xlsm',sheetname='월별수익률1')
-#rtn_monthly_notgross = pd.read_excel('A_trend_factor.xlsm',sheetname='월별수익률2')
-#rtn_monthly_notgross.to_pickle('rtn_monthly_notgross')
+#raw_data = pd.read_excel('A_trend_factor.xlsm',sheetname='Raw_data1')
+#raw_data.to_pickle('raw_data')
 #monthly_date = pd.read_excel('A_trend_factor.xlsm',sheetname='월말날짜1',header=None)
 #rtn_daily1.to_pickle('rtn_daily1')
 #rtn_monthly.to_pickle('rtn_monthly')
 rtn_monthly_notgross = pd.read_pickle('rtn_monthly_notgross') #수익률을 gross로 하지 말아야 하나?
 monthly_date = pd.read_pickle('monthly_date')
 rtn_monthly = pd.read_pickle('rtn_monthly') # gross 수익률
-rtn_daily = pd.read_pickle('rtn_daily')
+rtn_daily = pd.read_pickle('rtn_daily') 
+raw_data = pd.read_pickle('raw_data') 
 return_final_1 = pd.DataFrame(np.zeros((1,134)))
 return_final_2 = pd.DataFrame(np.zeros((1,134)))
 return_final_3 = pd.DataFrame(np.zeros((1,134)))
