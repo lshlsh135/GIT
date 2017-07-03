@@ -11,16 +11,24 @@ import numpy as np
 
 
 #rtn_monthly = pd.read_excel('A_trend_factor.xlsm',sheetname='월별수익률1')
+#rtn_monthly_notgross = pd.read_excel('A_trend_factor.xlsm',sheetname='월별수익률2')
+#rtn_monthly_notgross.to_pickle('rtn_monthly_notgross')
 #monthly_date = pd.read_excel('A_trend_factor.xlsm',sheetname='월말날짜1',header=None)
 #rtn_daily1.to_pickle('rtn_daily1')
 #rtn_monthly.to_pickle('rtn_monthly')
+rtn_monthly_notgross = pd.read_pickle('rtn_monthly_notgross') #수익률을 gross로 하지 말아야 하나?
 monthly_date = pd.read_pickle('monthly_date')
-rtn_monthly = pd.read_pickle('rtn_monthly')
+rtn_monthly = pd.read_pickle('rtn_monthly') # gross 수익률
 rtn_daily = pd.read_pickle('rtn_daily')
-higher_return_final = pd.DataFrame(np.zeros((1,134)))
-lower_return_final = pd.DataFrame(np.zeros((1,134)))
+return_final_1 = pd.DataFrame(np.zeros((1,134)))
+return_final_2 = pd.DataFrame(np.zeros((1,134)))
+return_final_3 = pd.DataFrame(np.zeros((1,134)))
+return_final_4 = pd.DataFrame(np.zeros((1,134)))
+return_final_5 = pd.DataFrame(np.zeros((1,134)))
 
-for n in range(12,146):
+rtn_monthly = rtn_monthly_notgross
+
+for n in range(12,145):
     
     beta_3_temp = pd.DataFrame(np.zeros((1,12)))
     for i in range(0,12):
@@ -41,7 +49,10 @@ for n in range(12,146):
         beta_3 = pd.DataFrame(np.dot(np.linalg.inv(np.dot(ma_3.T,ma_3)),np.dot(ma_3_temp[0].T,ma_3_temp.iloc[:,1])))
         beta_3_temp.iloc[0,i]=beta_3.iloc[0,0]
     
-    beta_3=np.average(beta_3_temp)    
+    beta_3=np.average(beta_3_temp)
+    #다음기 ma랑 곱해    
+    ma_3=pd.DataFrame(np.sum(rtn_daily.iloc[:,rebalancing_date_column-1:rebalancing_date_column+2],axis=1)/3/rtn_daily.iloc[:,rebalancing_date_column+1])
+    ma_3=ma_3[ma_3[0].notnull()]
     return_3=beta_3 * ma_3
     
     beta_5_temp = pd.DataFrame(np.zeros((1,12)))
@@ -64,6 +75,8 @@ for n in range(12,146):
         beta_5_temp.iloc[0,i]=beta_5.iloc[0,0]
     
     beta_5=np.average(beta_5_temp)    
+    ma_5=pd.DataFrame(np.sum(rtn_daily.iloc[:,rebalancing_date_column-3:rebalancing_date_column+2],axis=1)/5/rtn_daily.iloc[:,rebalancing_date_column+1])
+    ma_5=ma_5[ma_5[0].notnull()]
     return_5=beta_5 * ma_5
     
     beta_10_temp = pd.DataFrame(np.zeros((1,12)))
@@ -86,6 +99,8 @@ for n in range(12,146):
         beta_10_temp.iloc[0,i]=beta_10.iloc[0,0]
     
     beta_10=np.average(beta_10_temp)    
+    ma_10=pd.DataFrame(np.sum(rtn_daily.iloc[:,rebalancing_date_column-8:rebalancing_date_column+2],axis=1)/10/rtn_daily.iloc[:,rebalancing_date_column+1])
+    ma_10=ma_10[ma_10[0].notnull()]
     return_10=beta_10 * ma_10
     
     beta_20_temp = pd.DataFrame(np.zeros((1,12)))
@@ -107,7 +122,9 @@ for n in range(12,146):
         beta_20 = pd.DataFrame(np.dot(np.linalg.inv(np.dot(ma_20.T,ma_20)),np.dot(ma_20_temp[0].T,ma_20_temp.iloc[:,1])))
         beta_20_temp.iloc[0,i]=beta_20.iloc[0,0]
     
-    beta_20=np.average(beta_20_temp)    
+    beta_20=np.average(beta_20_temp)
+    ma_20=pd.DataFrame(np.sum(rtn_daily.iloc[:,rebalancing_date_column-18:rebalancing_date_column+2],axis=1)/20/rtn_daily.iloc[:,rebalancing_date_column+1])
+    ma_20=ma_20[ma_20[0].notnull()]
     return_20=beta_20 * ma_20
     
     beta_50_temp = pd.DataFrame(np.zeros((1,12)))
@@ -129,7 +146,9 @@ for n in range(12,146):
         beta_50 = pd.DataFrame(np.dot(np.linalg.inv(np.dot(ma_50.T,ma_50)),np.dot(ma_50_temp[0].T,ma_50_temp.iloc[:,1])))
         beta_50_temp.iloc[0,i]=beta_50.iloc[0,0]
     
-    beta_50=np.average(beta_50_temp)    
+    beta_50=np.average(beta_50_temp)
+    ma_50=pd.DataFrame(np.sum(rtn_daily.iloc[:,rebalancing_date_column-48:rebalancing_date_column+2],axis=1)/50/rtn_daily.iloc[:,rebalancing_date_column+1])
+    ma_50=ma_50[ma_50[0].notnull()]
     return_50=beta_50 * ma_50
     
     beta_100_temp = pd.DataFrame(np.zeros((1,12)))
@@ -151,7 +170,9 @@ for n in range(12,146):
         beta_100 = pd.DataFrame(np.dot(np.linalg.inv(np.dot(ma_100.T,ma_100)),np.dot(ma_100_temp[0].T,ma_100_temp.iloc[:,1])))
         beta_100_temp.iloc[0,i]=beta_100.iloc[0,0]
     
-    beta_100=np.average(beta_100_temp)    
+    beta_100=np.average(beta_100_temp)
+    ma_100=pd.DataFrame(np.sum(rtn_daily.iloc[:,rebalancing_date_column-98:rebalancing_date_column+2],axis=1)/100/rtn_daily.iloc[:,rebalancing_date_column+1])
+    ma_100=ma_100[ma_100[0].notnull()]
     return_100=beta_100 * ma_100
     
     beta_200_temp = pd.DataFrame(np.zeros((1,12)))
@@ -174,6 +195,8 @@ for n in range(12,146):
         beta_200_temp.iloc[0,i]=beta_200.iloc[0,0]
     
     beta_200=np.average(beta_200_temp)    
+    ma_200=pd.DataFrame(np.sum(rtn_daily.iloc[:,rebalancing_date_column-198:rebalancing_date_column+2],axis=1)/200/rtn_daily.iloc[:,rebalancing_date_column+1])
+    ma_200=ma_200[ma_200[0].notnull()]
     return_200=beta_200 * ma_200
     
     beta_400_temp = pd.DataFrame(np.zeros((1,12)))
@@ -196,6 +219,8 @@ for n in range(12,146):
         beta_400_temp.iloc[0,i]=beta_400.iloc[0,0]
     
     beta_400=np.average(beta_400_temp)    
+    ma_400=pd.DataFrame(np.sum(rtn_daily.iloc[:,rebalancing_date_column-398:rebalancing_date_column+2],axis=1)/400/rtn_daily.iloc[:,rebalancing_date_column+1])
+    ma_400=ma_400[ma_400[0].notnull()]
     return_400=beta_400 * ma_400
     
     beta_600_temp = pd.DataFrame(np.zeros((1,12)))
@@ -218,6 +243,8 @@ for n in range(12,146):
         beta_600_temp.iloc[0,i]=beta_600.iloc[0,0]
     
     beta_600=np.average(beta_600_temp)    
+    ma_600=pd.DataFrame(np.sum(rtn_daily.iloc[:,rebalancing_date_column-598:rebalancing_date_column+2],axis=1)/600/rtn_daily.iloc[:,rebalancing_date_column+1])
+    ma_600=ma_600[ma_600[0].notnull()]
     return_600=beta_600 * ma_600
     
     beta_800_temp = pd.DataFrame(np.zeros((1,12)))
@@ -240,6 +267,8 @@ for n in range(12,146):
         beta_800_temp.iloc[0,i]=beta_800.iloc[0,0]
     
     beta_800=np.average(beta_800_temp)    
+    ma_800=pd.DataFrame(np.sum(rtn_daily.iloc[:,rebalancing_date_column-798:rebalancing_date_column+2],axis=1)/800/rtn_daily.iloc[:,rebalancing_date_column+1])
+    ma_800=ma_800[ma_800[0].notnull()]
     return_800=beta_800 * ma_800
     
     beta_1000_temp = pd.DataFrame(np.zeros((1,12)))
@@ -262,18 +291,30 @@ for n in range(12,146):
         beta_1000_temp.iloc[0,i]=beta_1000.iloc[0,0]
     
     beta_1000=np.average(beta_1000_temp)    
+    ma_1000=pd.DataFrame(np.sum(rtn_daily.iloc[:,rebalancing_date_column-998:rebalancing_date_column+2],axis=1)/1000/rtn_daily.iloc[:,rebalancing_date_column+1])
+    ma_1000=ma_1000[ma_1000[0].notnull()]
     return_1000=beta_1000 * ma_1000
         
     final_return=return_3+return_5+return_10+return_20+return_50+return_100+return_200+return_400+return_600+return_800+return_1000
     
-    final_return= pd.concat([final_return,pd.DataFrame(rtn_monthly.iloc[:,n+1])],axis=1, join_axes=[final_return.index])
+    final_return= pd.concat([final_return,pd.DataFrame(rtn_monthly.iloc[:,n+2])],axis=1, join_axes=[final_return.index])
     final_return = final_return[final_return.iloc[:,1].notnull()]
-    final_return = final_return.assign(rnk=final_return.iloc[:,0].rank(method='first',ascending=False))
-    rtn_min=np.percentile(final_return['rnk'],20)
-    rtn_max=np.percentile(final_return['rnk'],80)
-    higher_return = final_return[final_return['rnk']<rtn_min]
-    lower_return = final_return[final_return['rnk']>rtn_max]
-    higher_return_final[n-12] = np.average(higher_return.iloc[:,1])
-    lower_return_final[n-12] = np.average(lower_return.iloc[:,1])
+    data_size= len(final_return)
+    final_return = final_return.assign(rnk=np.floor(final_return.iloc[:,0].rank(method='first',ascending=False)/(data_size/5+1/5)))
+    
+    return_1=final_return.query('5>rnk>3')   # 4
+    return_2=final_return.query('4>rnk>2')   # 3
+    return_3=final_return.query('3>rnk>1')   # 2
+    return_4=final_return.query('2>rnk>0')   # 1
+    return_5=final_return.query('1>rnk>-1')  # 0
+
+    return_final_1[n-12] = np.average(return_1.iloc[:,1])
+    return_final_2[n-12] = np.average(return_2.iloc[:,1])
+    return_final_3[n-12] = np.average(return_3.iloc[:,1])
+    return_final_4[n-12] = np.average(return_4.iloc[:,1])
+    return_final_5[n-12] = np.average(return_5.iloc[:,1])
+
+    final_return.groupby('rnk').size()
+
     
     
