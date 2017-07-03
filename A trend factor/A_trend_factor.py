@@ -11,7 +11,7 @@ import numpy as np
 
 
 #rtn_monthly = pd.read_excel('A_trend_factor.xlsm',sheetname='월별수익률1')
-#raw_data = pd.read_excel('A_trend_factor.xlsm',sheetname='Raw_data1')
+#raw_data = pd.read_excel('A_trend_factor.xlsm',sheetname='Raw_data1',header=None)
 #raw_data.to_pickle('raw_data')
 #monthly_date = pd.read_excel('A_trend_factor.xlsm',sheetname='월말날짜1',header=None)
 #rtn_daily1.to_pickle('rtn_daily1')
@@ -20,7 +20,9 @@ rtn_monthly_notgross = pd.read_pickle('rtn_monthly_notgross') #수익률을 gros
 monthly_date = pd.read_pickle('monthly_date')
 rtn_monthly = pd.read_pickle('rtn_monthly') # gross 수익률
 rtn_daily = pd.read_pickle('rtn_daily') 
-raw_data = pd.read_pickle('raw_data') 
+# 대중소를 볼수있는 raw_data는 column index를 날짜로 하지 않고 걍 숫자로 해야함
+# 그 이유는 나중에 rtn_daily랑 합치는데 primary key 가 겹치기 때문
+raw_data = pd.read_pickle('raw_data')    
 return_final_1 = pd.DataFrame(np.zeros((1,134)))
 return_final_2 = pd.DataFrame(np.zeros((1,134)))
 return_final_3 = pd.DataFrame(np.zeros((1,134)))
@@ -33,6 +35,9 @@ for n in range(12,145):
     
     beta_3_temp = pd.DataFrame(np.zeros((1,12)))
     for i in range(0,12):
+        aa=raw_data[raw_data.iloc[:,n-i]==3]
+        aa=pd.concat([raw_data,rtn_daily], axis=1)
+        bb=aa.iloc[0,:]
         #df.columns.get_loc() 이걸 하면 column 위치를 알 수 있다!!
         rebalancing_date_column=rtn_daily.columns.get_loc(monthly_date.iloc[0,n-i])
         
