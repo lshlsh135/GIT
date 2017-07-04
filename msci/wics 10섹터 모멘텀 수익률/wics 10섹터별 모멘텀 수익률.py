@@ -11,7 +11,7 @@ import pandas as pd
 import numpy as np
 
 
-return_data = np.zeros((5,194))
+return_data = np.zeros((5,195))
 return_data = pd.DataFrame(return_data)
 rtn_month = pd.read_excel('wics 10섹터별 수익률.xlsm',sheetname='월별수익률1',header=None)
 adj_price_52week_price_ratio = pd.read_excel('wics 10섹터별 수익률.xlsm',sheetname='수정주가52주최고수정주가1',header=None)
@@ -56,11 +56,11 @@ for n in range(1,196):
     for i in range(1,6):
         locals()['data_name_{}'.format(i)][n-1] = locals()['data_{}'.format(i)][0].reset_index(drop=True)
     
-    return_data.iloc[0,n-3]=np.mean(data_1[3])    # 각각  누적수익률 기록
-    return_data.iloc[1,n-3]=np.mean(data_2[3])
-    return_data.iloc[2,n-3]=np.mean(data_3[3])
-    return_data.iloc[3,n-3]=np.mean(data_4[3])
-    return_data.iloc[4,n-3]=np.mean(data_5[3])
+    return_data.iloc[0,n-1]=np.mean(data_1[3])    # 각각  누적수익률 기록
+    return_data.iloc[1,n-1]=np.mean(data_2[3])
+    return_data.iloc[2,n-1]=np.mean(data_3[3])
+    return_data.iloc[3,n-1]=np.mean(data_4[3])
+    return_data.iloc[4,n-1]=np.mean(data_5[3])
 
     if n == 195:
         pass
@@ -76,7 +76,7 @@ import pandas as pd
 import numpy as np
 
 
-return_data = np.zeros((2,194))
+return_data = np.zeros((2,195))
 return_data = pd.DataFrame(return_data)
 rtn_month = pd.read_excel('wics 10섹터별 수익률.xlsm',sheetname='월별수익률1',header=None)
 
@@ -112,8 +112,8 @@ for n in range(1,196):
     for i in range(1,3):
         locals()['data_name_{}'.format(i)][n-1] = locals()['data_{}'.format(i)][0].reset_index(drop=True)
     
-    return_data.iloc[0,n-3]=np.mean(data_1[3])    # 각각  누적수익률 기록
-    return_data.iloc[1,n-3]=np.mean(data_2[3])
+    return_data.iloc[0,n-1]=np.mean(data_1[3])    # 각각  누적수익률 기록
+    return_data.iloc[1,n-1]=np.mean(data_2[3])
 
 
     if n == 195:
@@ -193,7 +193,7 @@ import pandas as pd
 import numpy as np
 
 
-return_data = np.zeros((2,194))
+return_data = np.zeros((2,195))
 return_data = pd.DataFrame(return_data)
 rtn_month = pd.read_excel('wics 10섹터별 수익률.xlsm',sheetname='월별수익률1',header=None)
 
@@ -230,14 +230,69 @@ for n in range(1,196):
     for i in range(1,3):
         locals()['data_name_{}'.format(i)][n-1] = locals()['data_{}'.format(i)][0].reset_index(drop=True)
     
-    return_data.iloc[0,n-3]=np.mean(data_1[2])    # 각각  누적수익률 기록
-    return_data.iloc[1,n-3]=np.mean(data_2[2])
+    return_data.iloc[0,n-1]=np.mean(data_1[2])    # 각각  누적수익률 기록
+    return_data.iloc[1,n-1]=np.mean(data_2[2])
 
 
     if n == 195:
         pass
     
 return_data = return_data.replace([np.nan],1)   
+return_final=np.product(return_data,axis=1)
+
+aa=np.product(np.mean(rtn_month.loc[:,1:207],axis=0))
+
+
+#==============================================================================
+# 2개의 그룹으로 나눈 경우(개수 바꿀수 있음) 직전 11개월 수익률
+#==============================================================================
+import pandas as pd
+import numpy as np
+
+
+return_data = np.zeros((2,195))
+return_data = pd.DataFrame(return_data)
+rtn_month = pd.read_excel('wics 10섹터별 수익률.xlsm',sheetname='월별수익률1',header=None)
+
+for i in range(1,3):
+    locals()['data_name_{}'.format(i)] = pd.DataFrame(np.zeros((200,250)))
+
+turnover = pd.DataFrame(np.zeros((5,1)))
+name = rtn_month.loc[:,0]
+for n in range(1,196):
+    
+    data = pd.concat([name,rtn_month.loc[:,n:n+10]],axis=1,join='inner',ignore_index=True)
+    
+    temp_return=data.loc[:,0:12]
+    for k in range(2,12):
+        temp_return[1]=temp_return[1]*temp_return[k]
+        
+    gross_return=temp_return[[0,1]]
+    gross_return=gross_return[gross_return[1].notnull()]
+    data_size= len(gross_return)     # Row count
+    
+    gross_return=gross_return.assign(rnk=np.floor(gross_return[1].rank(method='first')))
+    
+    data_1=gross_return.query('rnk>6')   # 4
+    data_2=gross_return.query('rnk<7')   # 3
+
+    
+    data_1=pd.concat([data_1,rtn_month[n+12]],axis=1,join='inner',ignore_index=True)    # 각각 수익률 매칭
+    data_2=pd.concat([data_2,rtn_month[n+12]],axis=1,join='inner',ignore_index=True)
+
+    data_1=data_1[data_1[3].notnull()]
+    data_2=data_2[data_2[3].notnull()]
+
+    for i in range(1,3):
+        locals()['data_name_{}'.format(i)][n-1] = locals()['data_{}'.format(i)][0].reset_index(drop=True)
+    
+    return_data.iloc[0,n-1]=np.mean(data_1[3])    # 각각  누적수익률 기록
+    return_data.iloc[1,n-1]=np.mean(data_2[3])
+
+
+    if n == 195:
+        pass
+    
 return_final=np.product(return_data,axis=1)
 
 aa=np.product(np.mean(rtn_month.loc[:,1:207],axis=0))

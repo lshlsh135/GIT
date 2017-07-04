@@ -131,7 +131,7 @@ for n in range(3,68):
     data_size= len(gross_return)     # Row count
     
     gross_return=gross_return.assign(rnk=np.floor(gross_return[1].rank(method='first')/(data_size/5+1/5))) 
-    sector_mom = gross_return.query('rnk>1')
+    sector_mom = gross_return.query('rnk>2')
         
         
     data_big = raw_data_sum[(raw_data_sum[n] == 1)|(raw_data_sum[n] == 2)|(raw_data_sum[n] == 3)|(raw_data_sum[n] == 'KOSDAQ')]
