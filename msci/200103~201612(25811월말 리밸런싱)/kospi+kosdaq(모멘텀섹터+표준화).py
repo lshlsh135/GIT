@@ -121,11 +121,17 @@ z=0 #연말현금배당수익률을 저장하기 위해 ... 아래 if문있음
 for n in range(3,68):
     #66마지막 분기
     name = sector_rtn_month.loc[:,0]
-    sector_data = pd.concat([name,sector_rtn_month.loc[:,3*(n-2)-2:3*(n-2)+8]],axis=1,join='inner',ignore_index=True)    
-    temp_return=sector_data.loc[:,0:12]
+    sector_mom_data = pd.concat([name,sector_rtn_month.loc[:,3*(n-2)-2:3*(n-2)+8]],axis=1,join='inner',ignore_index=True)    
+    temp_return=sector_mom_data.loc[:,0:12]
     for k in range(2,12):
         temp_return[1]=temp_return[1]*temp_return[k]
-        
+    
+    gross_return=temp_return[[0,1]]
+    gross_return=gross_return[gross_return[1].notnull()]
+    data_size= len(gross_return)     # Row count
+    
+    gross_return=gross_return.assign(rnk=np.floor(gross_return[1].rank(method='first')/(data_size/5+1/5))) 
+    sector_mom = gross_return.query('rnk>1')
         
         
     data_big = raw_data_sum[(raw_data_sum[n] == 1)|(raw_data_sum[n] == 2)|(raw_data_sum[n] == 3)|(raw_data_sum[n] == 'KOSDAQ')]
@@ -144,8 +150,14 @@ for n in range(3,68):
     data = data[data['ni_12fw'].notnull()]
     data = data[data['cash_div'].notnull()]
     
+    for i in range(1,11):
+        locals()['result_{}'.format(i)] = pd.DataFrame(np.zeros((200,19)))
+
+    
+    
+    a=1
     #IT 섹터
-    if np.sum(data['sector']=='IT')>0:
+    if (np.sum(data['sector']=='IT')>0)&(np.sum(sector_mom[0]=='IT')==1):
         data_IT = data[data['sector']=="IT"]
         # per, pbr, div_yield 구할때는 전체 시가총액을 사용,
         # 시총비중 구할떄는 free-float
@@ -197,11 +209,12 @@ for n in range(3,68):
     
         
         # z_score > 0 인것이 가치주라고 msci에서 하고있음
-        result_IT =result_IT[result_IT['z_score'].notnull()]
+        locals()['result_{}'.format(a)] =result_IT[result_IT['z_score'].notnull()]
+        a=a+1
     
     
     #건강관리 섹터
-    if np.sum(data['sector']=='건강관리')>0:
+    if (np.sum(data['sector']=='건강관리')>0)&(np.sum(sector_mom[0]=='건강관리')==1):
         data_건강관리 = data[data['sector']=='건강관리']
         # per, pbr, div_yield 구할때는 전체 시가총액을 사용,
         # 시총비중 구할떄는 free-float
@@ -253,10 +266,10 @@ for n in range(3,68):
     
         
         # z_score > 0 인것이 가치주라고 msci에서 하고있음
-        result_건강관리 =result_건강관리[result_건강관리['z_score'].notnull()]
-        
+        locals()['result_{}'.format(a)] =result_건강관리[result_건강관리['z_score'].notnull()]
+        a=a+1
        #경기관련소비재 섹터
-    if np.sum(data['sector']=='경기관련소비재')>0:
+    if (np.sum(data['sector']=='경기관련소비재')>0)&(np.sum(sector_mom[0]=='경기관련소비재')==1):
         data_경기관련소비재 = data[data['sector']=='경기관련소비재']
         # per, pbr, div_yield 구할때는 전체 시가총액을 사용,
         # 시총비중 구할떄는 free-float
@@ -308,10 +321,10 @@ for n in range(3,68):
     
         
         # z_score > 0 인것이 가치주라고 msci에서 하고있음
-        result_경기관련소비재 =result_경기관련소비재[result_경기관련소비재['z_score'].notnull()]
-        
+        locals()['result_{}'.format(a)] =result_경기관련소비재[result_경기관련소비재['z_score'].notnull()]
+        a=a+1
     #금융 섹터
-    if np.sum(data['sector']=='금융')>0:
+    if (np.sum(data['sector']=='금융')>0)&(np.sum(sector_mom[0]=='금융')==1):
         data_금융 = data[data['sector']=='금융']
         # per, pbr, div_yield 구할때는 전체 시가총액을 사용,
         # 시총비중 구할떄는 free-float
@@ -363,10 +376,10 @@ for n in range(3,68):
     
         
         # z_score > 0 인것이 가치주라고 msci에서 하고있음
-        result_금융 =result_금융[result_금융['z_score'].notnull()]
-       
+        locals()['result_{}'.format(a)] =result_금융[result_금융['z_score'].notnull()]
+        a=a+1
     #산업재 섹터
-    if np.sum(data['sector']=='산업재')>0:
+    if (np.sum(data['sector']=='산업재')>0)&(np.sum(sector_mom[0]=='산업재')==1):
         data_산업재 = data[data['sector']=='산업재']
         # per, pbr, div_yield 구할때는 전체 시가총액을 사용,
         # 시총비중 구할떄는 free-float
@@ -418,10 +431,10 @@ for n in range(3,68):
     
         
         # z_score > 0 인것이 가치주라고 msci에서 하고있음
-        result_산업재 =result_산업재[result_산업재['z_score'].notnull()]
-        
+        locals()['result_{}'.format(a)] =result_산업재[result_산업재['z_score'].notnull()]
+        a=a+1
     #소재 섹터
-    if np.sum(data['sector']=='소재')>0:
+    if (np.sum(data['sector']=='소재')>0)&(np.sum(sector_mom[0]=='소재')==1):
         data_소재 = data[data['sector']=='소재']
         # per, pbr, div_yield 구할때는 전체 시가총액을 사용,
         # 시총비중 구할떄는 free-float
@@ -473,10 +486,10 @@ for n in range(3,68):
     
         
         # z_score > 0 인것이 가치주라고 msci에서 하고있음
-        result_소재 =result_소재[result_소재['z_score'].notnull()]
-          
+        locals()['result_{}'.format(a)] =result_소재[result_소재['z_score'].notnull()]
+        a=a+1
     #에너지 섹터
-    if np.sum(data['sector']=='에너지')>0:
+    if (np.sum(data['sector']=='에너지')>0)&(np.sum(sector_mom[0]=='에너지')==1):
         data_에너지 = data[data['sector']=='에너지']
         # per, pbr, div_yield 구할때는 전체 시가총액을 사용,
         # 시총비중 구할떄는 free-float
@@ -528,10 +541,10 @@ for n in range(3,68):
     
         
         # z_score > 0 인것이 가치주라고 msci에서 하고있음
-        result_에너지 =result_에너지[result_에너지['z_score'].notnull()]
-         
+        locals()['result_{}'.format(a)] =result_에너지[result_에너지['z_score'].notnull()]
+        a=a+1
     #유틸리티 섹터
-    if np.sum(data['sector']=='유틸리티')>0:
+    if (np.sum(data['sector']=='유틸리티')>0)&(np.sum(sector_mom[0]=='유틸리티')==1):
         data_유틸리티 = data[data['sector']=='유틸리티']
         # per, pbr, div_yield 구할때는 전체 시가총액을 사용,
         # 시총비중 구할떄는 free-float
@@ -583,10 +596,10 @@ for n in range(3,68):
     
         
         # z_score > 0 인것이 가치주라고 msci에서 하고있음
-        result_유틸리티 =result_유틸리티[result_유틸리티['z_score'].notnull()]
-          
+        locals()['result_{}'.format(a)] =result_유틸리티[result_유틸리티['z_score'].notnull()]
+        a=a+1
     #전기통신서비스 섹터
-    if np.sum(data['sector']=='전기통신서비스')>0:
+    if (np.sum(data['sector']=='전기통신서비스')>0)&(np.sum(sector_mom[0]=='전기통신서비스')==1):
         data_정기통신서비스 = data[data['sector']=='전기통신서비스']
         # per, pbr, div_yield 구할때는 전체 시가총액을 사용,
         # 시총비중 구할떄는 free-float
@@ -638,10 +651,10 @@ for n in range(3,68):
     
         
         # z_score > 0 인것이 가치주라고 msci에서 하고있음
-        result_정기통신서비스 =result_정기통신서비스[result_정기통신서비스['z_score'].notnull()]
-        
+        locals()['result_{}'.format(a)] =result_정기통신서비스[result_정기통신서비스['z_score'].notnull()]
+        a=a+1
     #필수소비재 섹터
-    if np.sum(data['sector']=='필수소비재')>0:
+    if (np.sum(data['sector']=='필수소비재')>0)&(np.sum(sector_mom[0]=='필수소비재')==1):
         data_필수소비재 = data[data['sector']=='필수소비재']
         # per, pbr, div_yield 구할때는 전체 시가총액을 사용,
         # 시총비중 구할떄는 free-float
@@ -693,12 +706,14 @@ for n in range(3,68):
     
         
         # z_score > 0 인것이 가치주라고 msci에서 하고있음
-        result_필수소비재 =result_필수소비재[result_필수소비재['z_score'].notnull()]
+        locals()['result_{}'.format(a)] =result_필수소비재[result_필수소비재['z_score'].notnull()]
+        a=a+1
     
-    result = pd.concat([result_IT,result_건강관리,result_경기관련소비재,result_금융,result_산업재,result_소재,result_에너지,result_유틸리티,result_정기통신서비스,result_필수소비재],axis=0)
+    for y in range(2,a):    
+        result_1 = pd.concat([result_1,locals()['result_{}'.format(y)]],axis=0,join='inner')
+   
     
-    
-    
+    result = result_1
     
     #상위 65%로 결정하면 삼성전자가 n=64,65,66일때 모두 포함이 된다.
 #    z_score1_max=np.percentile(result['z_score'],50)
@@ -809,7 +824,9 @@ win_rate = diff[column_lengh-1]/column_lengh
 #초기 기준이 되는 full index 설정
 sector_data_temp = sector_data.set_index([0],drop=False)
 #초기값 설정
-sector_data_count = sector_data_temp.iloc[0:10,1]
+#매번 포함되는 섹터가 다르기 때문에 기존에 10개가 아니다. 
+sector_length = len(sector_data_temp[0][sector_data_temp[0].notnull()])
+sector_data_count = sector_data_temp.iloc[0:sector_length,1]
 sector_data_sum = np.sum(sector_data_count)
 sector_data_count = sector_data_count/sector_data_sum
 
