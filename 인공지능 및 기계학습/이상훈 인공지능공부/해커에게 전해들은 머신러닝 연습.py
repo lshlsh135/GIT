@@ -102,4 +102,5 @@ print(sess.run(hello))
 a = tf.constant(10)
 b = tf.constant(32)
 print(sess.run(a + b))
-tf.__version__
+tf.__version__                            #버전 확인하는 코드
+
