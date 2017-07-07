@@ -273,8 +273,8 @@ for n in range(1,196):
     
     gross_return=gross_return.assign(rnk=np.floor(gross_return[1].rank(method='first')))
     
-    data_1=gross_return.query('rnk>6')   # 4
-    data_2=gross_return.query('rnk<7')   # 3
+    data_1=gross_return.query('rnk>8')   # 4
+    data_2=gross_return.query('rnk<9')   # 3
 
     
     data_1=pd.concat([data_1,rtn_month[n+12]],axis=1,join='inner',ignore_index=True)    # 각각 수익률 매칭
