@@ -1824,11 +1824,11 @@ for n in range(3,69):
     result=result.assign(market_weight2=result['size_FIF_wisefn']/market_cap교육서비스al)          
     
     #연말현금배당수익률 저장
-    if (n>4)&((n-4)%4==2):
-        result_cash_temp= pd.concat([result['name'],cash_div_rtn_sum[(n+2)/4-2]],axis=1)
-        result_cash_temp=result_cash_temp[result_cash_temp['name'].notnull()]
-        result_cash[[z,z+1]] = result_cash_temp.iloc[:,[0,1]].reset_index(drop=True)
-        z=z+2
+#    if (n>4)&((n-4)%4==2):
+#        result_cash_temp= pd.concat([result['name'],cash_div_rtn_sum[(n+2)/4-2]],axis=1)
+#        result_cash_temp=result_cash_temp[result_cash_temp['name'].notnull()]
+#        result_cash[[z,z+1]] = result_cash_temp.iloc[:,[0,1]].reset_index(drop=True)
+#        z=z+2
         
     
     #동일가중
