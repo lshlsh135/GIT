@@ -167,7 +167,7 @@ for n in range(3,68):
         data_IT['div_yield']=data_IT['cash_div']/data_IT['size']
         
         # inf, -inf 값들을 NAN 값으로 변경 (그래야 한번에 제거 가능)
-        data_IT_IT = data_IT.replace([np.inf, -np.inf],np.nan)  
+        data_IT = data_IT.replace([np.inf, -np.inf],np.nan)  
         
         # Null 값 제거
         data_IT_per = data_IT[data_IT['1/per'].notnull()]
@@ -224,7 +224,7 @@ for n in range(3,68):
         data_건강관리['div_yield']=data_건강관리['cash_div']/data_건강관리['size']
         
         # inf, -inf 값들을 NAN 값으로 변경 (그래야 한번에 제거 가능)
-        data_건강관리_건강관리 = data_건강관리.replace([np.inf, -np.inf],np.nan)  
+        data_건강관리 = data_건강관리.replace([np.inf, -np.inf],np.nan)  
         
         # Null 값 제거
         data_건강관리_per = data_건강관리[data_건강관리['1/per'].notnull()]
@@ -279,7 +279,7 @@ for n in range(3,68):
         data_경기관련소비재['div_yield']=data_경기관련소비재['cash_div']/data_경기관련소비재['size']
         
         # inf, -inf 값들을 NAN 값으로 변경 (그래야 한번에 제거 가능)
-        data_경기관련소비재_경기관련소비재 = data_경기관련소비재.replace([np.inf, -np.inf],np.nan)  
+        data_경기관련소비재 = data_경기관련소비재.replace([np.inf, -np.inf],np.nan)  
         
         # Null 값 제거
         data_경기관련소비재_per = data_경기관련소비재[data_경기관련소비재['1/per'].notnull()]
@@ -334,7 +334,7 @@ for n in range(3,68):
         data_금융['div_yield']=data_금융['cash_div']/data_금융['size']
         
         # inf, -inf 값들을 NAN 값으로 변경 (그래야 한번에 제거 가능)
-        data_금융_금융 = data_금융.replace([np.inf, -np.inf],np.nan)  
+        data_금융 = data_금융.replace([np.inf, -np.inf],np.nan)  
         
         # Null 값 제거
         data_금융_per = data_금융[data_금융['1/per'].notnull()]
@@ -389,7 +389,7 @@ for n in range(3,68):
         data_산업재['div_yield']=data_산업재['cash_div']/data_산업재['size']
         
         # inf, -inf 값들을 NAN 값으로 변경 (그래야 한번에 제거 가능)
-        data_산업재_산업재 = data_산업재.replace([np.inf, -np.inf],np.nan)  
+        data_산업재 = data_산업재.replace([np.inf, -np.inf],np.nan)  
         
         # Null 값 제거
         data_산업재_per = data_산업재[data_산업재['1/per'].notnull()]
@@ -444,7 +444,7 @@ for n in range(3,68):
         data_소재['div_yield']=data_소재['cash_div']/data_소재['size']
         
         # inf, -inf 값들을 NAN 값으로 변경 (그래야 한번에 제거 가능)
-        data_소재_소재 = data_소재.replace([np.inf, -np.inf],np.nan)  
+        data_소재 = data_소재.replace([np.inf, -np.inf],np.nan)  
         
         # Null 값 제거
         data_소재_per = data_소재[data_소재['1/per'].notnull()]
@@ -499,7 +499,7 @@ for n in range(3,68):
         data_에너지['div_yield']=data_에너지['cash_div']/data_에너지['size']
         
         # inf, -inf 값들을 NAN 값으로 변경 (그래야 한번에 제거 가능)
-        data_에너지_에너지 = data_에너지.replace([np.inf, -np.inf],np.nan)  
+        data_에너지 = data_에너지.replace([np.inf, -np.inf],np.nan)  
         
         # Null 값 제거
         data_에너지_per = data_에너지[data_에너지['1/per'].notnull()]
@@ -554,7 +554,7 @@ for n in range(3,68):
         data_유틸리티['div_yield']=data_유틸리티['cash_div']/data_유틸리티['size']
         
         # inf, -inf 값들을 NAN 값으로 변경 (그래야 한번에 제거 가능)
-        data_유틸리티_유틸리티 = data_유틸리티.replace([np.inf, -np.inf],np.nan)  
+        data_유틸리티 = data_유틸리티.replace([np.inf, -np.inf],np.nan)  
         
         # Null 값 제거
         data_유틸리티_per = data_유틸리티[data_유틸리티['1/per'].notnull()]
@@ -609,7 +609,7 @@ for n in range(3,68):
         data_정기통신서비스['div_yield']=data_정기통신서비스['cash_div']/data_정기통신서비스['size']
         
         # inf, -inf 값들을 NAN 값으로 변경 (그래야 한번에 제거 가능)
-        data_정기통신서비스_정기통신서비스 = data_정기통신서비스.replace([np.inf, -np.inf],np.nan)  
+        data_정기통신서비스 = data_정기통신서비스.replace([np.inf, -np.inf],np.nan)  
         
         # Null 값 제거
         data_정기통신서비스_per = data_정기통신서비스[data_정기통신서비스['1/per'].notnull()]
@@ -664,7 +664,7 @@ for n in range(3,68):
         data_필수소비재['div_yield']=data_필수소비재['cash_div']/data_필수소비재['size']
         
         # inf, -inf 값들을 NAN 값으로 변경 (그래야 한번에 제거 가능)
-        data_필수소비재_필수소비재 = data_필수소비재.replace([np.inf, -np.inf],np.nan)  
+        data_필수소비재 = data_필수소비재.replace([np.inf, -np.inf],np.nan)  
         
         # Null 값 제거
         data_필수소비재_per = data_필수소비재[data_필수소비재['1/per'].notnull()]

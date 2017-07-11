@@ -1,5 +1,12 @@
 # -*- coding: utf-8 -*-
 """
+Created on Tue Jul 11 11:27:12 2017
+
+@author: SH-NoteBook
+"""
+
+# -*- coding: utf-8 -*-
+"""
 Created on Tue Jul 11 08:40:11 2017
 
 @author: SH-NoteBook
@@ -92,7 +99,7 @@ rtn_kq = pd.read_pickle('rtn_kq')
 equity_kq = pd.read_pickle('equity_kq') #자본총계
 cash_div_kq = pd.read_pickle('cash_div_kq')
 size_FIF_wisefn_kq=pd.read_pickle('size_FIF_wisefn_kq') #시가총액
-sector_kq=pd.read_pickle('sector_mid_kq') #시가총액
+sector_kq=pd.read_pickle('sector_mid_kq') #중분류
 return_dividend_kq = pd.read_pickle('return_dividend_kq')
 cash_div_rtn_kq = pd.read_pickle('cash_div_rtn_kq') #연말현금배당수익률
 rtn_month_kq = pd.read_pickle('rtn_month_kq') #월별수익률
@@ -133,18 +140,7 @@ sector_mid_rtn_month = pd.read_pickle('sector_mid_rtn_month')
 z=0 #연말현금배당수익률을 저장하기 위해 ... 아래 if문있음
 for n in range(3,68):
     #66마지막 분기
-    name = sector_mid_rtn_month.loc[:,0]
-    sector_mom_data = pd.concat([name,sector_mid_rtn_month.loc[:,3*(n-2)-2:3*(n-2)+8]],axis=1,join='inner',ignore_index=True)    
-    temp_return=sector_mom_data.loc[:,0:12]
-    for k in range(2,12):
-        temp_return[1]=temp_return[1]*temp_return[k]
-    
-    gross_return=temp_return[[0,1]]
-    gross_return=gross_return[gross_return[1].notnull()]
-    data_size= len(gross_return)     # Row count
-    
-    gross_return=gross_return.assign(rnk=np.floor(gross_return[1].rank(method='first',ascending=False))) 
-    sector_mom = gross_return.query('rnk<11')
+
         
         
     data_big = raw_data_sum[(raw_data_sum[n] == 1)|(raw_data_sum[n] == 2)|(raw_data_sum[n] == 3)|(raw_data_sum[n] == 'KOSDAQ')]
@@ -170,7 +166,7 @@ for n in range(3,68):
     
     a=1
         #에너지 섹터
-    if (np.sum(data['sector']=='에너지')>0)&(np.sum(sector_mom[0]=='에너지')==1):
+    if (np.sum(data['sector']=='에너지')>0):
         data_에너지 = data[data['sector']=='에너지']
         # per, pbr, div_yield 구할때는 전체 시가총액을 사용,
         # 시총비중 구할떄는 free-float
@@ -227,7 +223,7 @@ for n in range(3,68):
         a=a+1
         
     #소재 섹터
-    if (np.sum(data['sector']=='소재')>0)&(np.sum(sector_mom[0]=='소재')==1):
+    if (np.sum(data['sector']=='소재')>0):
         data_소재 = data[data['sector']=='소재']
         # per, pbr, div_yield 구할때는 전체 시가총액을 사용,
         # 시총비중 구할떄는 free-float
@@ -282,7 +278,7 @@ for n in range(3,68):
         locals()['result_{}'.format(a)] =result_소재[result_소재['z_score'].notnull()]
         a=a+1    
     #자본재 섹터
-    if (np.sum(data['sector']=='자본재')>0)&(np.sum(sector_mom[0]=='자본재')==1):
+    if (np.sum(data['sector']=='자본재')>0):
         data_자본재 = data[data['sector']=="자본재"]
         # per, pbr, div_yield 구할때는 전체 시가총액을 사용,
         # 시총비중 구할떄는 free-float
@@ -339,7 +335,7 @@ for n in range(3,68):
     
     
     #상업서비스와공급품 섹터
-    if (np.sum(data['sector']=='상업서비스와공급품')>0)&(np.sum(sector_mom[0]=='상업서비스와공급품')==1):
+    if (np.sum(data['sector']=='상업서비스와공급품')>0):
         data_상업서비스와공급품 = data[data['sector']=='상업서비스와공급품']
         # per, pbr, div_yield 구할때는 전체 시가총액을 사용,
         # 시총비중 구할떄는 free-float
@@ -394,7 +390,7 @@ for n in range(3,68):
         locals()['result_{}'.format(a)] =result_상업서비스와공급품[result_상업서비스와공급품['z_score'].notnull()]
         a=a+1
        #운송 섹터
-    if (np.sum(data['sector']=='운송')>0)&(np.sum(sector_mom[0]=='운송')==1):
+    if (np.sum(data['sector']=='운송')>0):
         data_운송 = data[data['sector']=='운송']
         # per, pbr, div_yield 구할때는 전체 시가총액을 사용,
         # 시총비중 구할떄는 free-float
@@ -449,7 +445,7 @@ for n in range(3,68):
         locals()['result_{}'.format(a)] =result_운송[result_운송['z_score'].notnull()]
         a=a+1
     #자동차와부품 섹터
-    if (np.sum(data['sector']=='자동차와부품')>0)&(np.sum(sector_mom[0]=='자동차와부품')==1):
+    if (np.sum(data['sector']=='자동차와부품')>0):
         data_자동차와부품 = data[data['sector']=='자동차와부품']
         # per, pbr, div_yield 구할때는 전체 시가총액을 사용,
         # 시총비중 구할떄는 free-float
@@ -504,7 +500,7 @@ for n in range(3,68):
         locals()['result_{}'.format(a)] =result_자동차와부품[result_자동차와부품['z_score'].notnull()]
         a=a+1
     #내구소비재와의류 섹터
-    if (np.sum(data['sector']=='내구소비재와의류')>0)&(np.sum(sector_mom[0]=='내구소비재와의류')==1):
+    if (np.sum(data['sector']=='내구소비재와의류')>0):
         data_내구소비재와의류 = data[data['sector']=='내구소비재와의류']
         # per, pbr, div_yield 구할때는 전체 시가총액을 사용,
         # 시총비중 구할떄는 free-float
@@ -561,7 +557,7 @@ for n in range(3,68):
     
 
     #호텔_레스토랑_레저 섹터
-    if (np.sum(data['sector']=='호텔,레스토랑,레저등')>0)&(np.sum(sector_mom[0]=='호텔,레스토랑,레저등')==1):
+    if (np.sum(data['sector']=='호텔,레스토랑,레저등')>0):
         data_호텔_레스토랑_레저 = data[data['sector']=='호텔,레스토랑,레저등']
         # per, pbr, div_yield 구할때는 전체 시가총액을 사용,
         # 시총비중 구할떄는 free-float
@@ -616,7 +612,7 @@ for n in range(3,68):
         locals()['result_{}'.format(a)] =result_호텔_레스토랑_레저[result_호텔_레스토랑_레저['z_score'].notnull()]
         a=a+1
     #미디어 섹터
-    if (np.sum(data['sector']=='미디어')>0)&(np.sum(sector_mom[0]=='미디어')==1):
+    if (np.sum(data['sector']=='미디어')>0):
         data_미디어 = data[data['sector']=='미디어']
         # per, pbr, div_yield 구할때는 전체 시가총액을 사용,
         # 시총비중 구할떄는 free-float
@@ -671,7 +667,7 @@ for n in range(3,68):
         locals()['result_{}'.format(a)] =result_미디어[result_미디어['z_score'].notnull()]
         a=a+1
     #소매(유통) 섹터
-    if (np.sum(data['sector']=='소매(유통)')>0)&(np.sum(sector_mom[0]=='소매(유통)')==1):
+    if (np.sum(data['sector']=='소매(유통)')>0):
         data_소매_유통 = data[data['sector']=='소매(유통)']
         # per, pbr, div_yield 구할때는 전체 시가총액을 사용,
         # 시총비중 구할떄는 free-float
@@ -727,7 +723,7 @@ for n in range(3,68):
         a=a+1
         
      #교육서비스 섹터
-    if (np.sum(data['sector']=='교육서비스')>0)&(np.sum(sector_mom[0]=='교육서비스')==1):
+    if (np.sum(data['sector']=='교육서비스')>0):
         data_교육서비스 = data[data['sector']=="교육서비스"]
         # per, pbr, div_yield 구할때는 전체 시가총액을 사용,
         # 시총비중 구할떄는 free-float
@@ -783,7 +779,7 @@ for n in range(3,68):
         a=a+1
     
      #식품과기본식료품소매 섹터
-    if (np.sum(data['sector']=='식품과기본식료품소매')>0)&(np.sum(sector_mom[0]=='식품과기본식료품소매')==1):
+    if (np.sum(data['sector']=='식품과기본식료품소매')>0):
         data_식품과기본식료품소매 = data[data['sector']=="식품과기본식료품소매"]
         # per, pbr, div_yield 구할때는 전체 시가총액을 사용,
         # 시총비중 구할떄는 free-float
@@ -839,7 +835,7 @@ for n in range(3,68):
         a=a+1
     
      #식품,음료,담배 섹터
-    if (np.sum(data['sector']=='식품,음료,담배')>0)&(np.sum(sector_mom[0]=='식품,음료,담배')==1):
+    if (np.sum(data['sector']=='식품,음료,담배')>0):
         data_식품_음료_담배 = data[data['sector']=="식품,음료,담배"]
         # per, pbr, div_yield 구할때는 전체 시가총액을 사용,
         # 시총비중 구할떄는 free-float
@@ -895,7 +891,7 @@ for n in range(3,68):
         a=a+1
     
      #가정용품과개인용품 섹터
-    if (np.sum(data['sector']=='가정용품과개인용품')>0)&(np.sum(sector_mom[0]=='가정용품과개인용품')==1):
+    if (np.sum(data['sector']=='가정용품과개인용품')>0):
         data_가정용품과개인용품 = data[data['sector']=="가정용품과개인용품"]
         # per, pbr, div_yield 구할때는 전체 시가총액을 사용,
         # 시총비중 구할떄는 free-float
@@ -951,7 +947,7 @@ for n in range(3,68):
         a=a+1
     
      #건강관리장비와서비스 섹터
-    if (np.sum(data['sector']=='건강관리장비와서비스')>0)&(np.sum(sector_mom[0]=='건강관리장비와서비스')==1):
+    if (np.sum(data['sector']=='건강관리장비와서비스')>0):
         data_건강관리장비와서비스 = data[data['sector']=="건강관리장비와서비스"]
         # per, pbr, div_yield 구할때는 전체 시가총액을 사용,
         # 시총비중 구할떄는 free-float
@@ -1007,7 +1003,7 @@ for n in range(3,68):
         a=a+1
     
      #제약과생물공학 섹터
-    if (np.sum(data['sector']=='제약과생물공학')>0)&(np.sum(sector_mom[0]=='제약과생물공학')==1):
+    if (np.sum(data['sector']=='제약과생물공학')>0):
         data_제약과생물공학 = data[data['sector']=="제약과생물공학"]
         # per, pbr, div_yield 구할때는 전체 시가총액을 사용,
         # 시총비중 구할떄는 free-float
@@ -1063,7 +1059,7 @@ for n in range(3,68):
         a=a+1
    
      #은행 섹터
-    if (np.sum(data['sector']=='은행')>0)&(np.sum(sector_mom[0]=='은행')==1):
+    if (np.sum(data['sector']=='은행')>0):
         data_은행 = data[data['sector']=="은행"]
         # per, pbr, div_yield 구할때는 전체 시가총액을 사용,
         # 시총비중 구할떄는 free-float
@@ -1119,7 +1115,7 @@ for n in range(3,68):
         a=a+1
     
      #증권 섹터
-    if (np.sum(data['sector']=='증권')>0)&(np.sum(sector_mom[0]=='증권')==1):
+    if (np.sum(data['sector']=='증권')>0):
         data_증권 = data[data['sector']=="증권"]
         # per, pbr, div_yield 구할때는 전체 시가총액을 사용,
         # 시총비중 구할떄는 free-float
@@ -1175,7 +1171,7 @@ for n in range(3,68):
         a=a+1
     
      #다각화된금융 섹터
-    if (np.sum(data['sector']=='다각화된금융')>0)&(np.sum(sector_mom[0]=='다각화된금융')==1):
+    if (np.sum(data['sector']=='다각화된금융')>0):
         data_다각화된금융 = data[data['sector']=="다각화된금융"]
         # per, pbr, div_yield 구할때는 전체 시가총액을 사용,
         # 시총비중 구할떄는 free-float
@@ -1231,7 +1227,7 @@ for n in range(3,68):
         a=a+1
     
      #보험 섹터
-    if (np.sum(data['sector']=='보험')>0)&(np.sum(sector_mom[0]=='보험')==1):
+    if (np.sum(data['sector']=='보험')>0):
         data_보험 = data[data['sector']=="보험"]
         # per, pbr, div_yield 구할때는 전체 시가총액을 사용,
         # 시총비중 구할떄는 free-float
@@ -1287,7 +1283,7 @@ for n in range(3,68):
         a=a+1
    
      #부동산 섹터
-    if (np.sum(data['sector']=='부동산')>0)&(np.sum(sector_mom[0]=='부동산')==1):
+    if (np.sum(data['sector']=='부동산')>0):
         data_부동산 = data[data['sector']=="부동산"]
         # per, pbr, div_yield 구할때는 전체 시가총액을 사용,
         # 시총비중 구할떄는 free-float
@@ -1343,7 +1339,7 @@ for n in range(3,68):
         a=a+1
     
      #기타금융서비스 섹터
-    if (np.sum(data['sector']=='기타금융서비스')>0)&(np.sum(sector_mom[0]=='기타금융서비스')==1):
+    if (np.sum(data['sector']=='기타금융서비스')>0):
         data_기타금융서비스 = data[data['sector']=="기타금융서비스"]
         # per, pbr, div_yield 구할때는 전체 시가총액을 사용,
         # 시총비중 구할떄는 free-float
@@ -1399,7 +1395,7 @@ for n in range(3,68):
         a=a+1
     
      #소프트웨어와서비스 섹터
-    if (np.sum(data['sector']=='소프트웨어와서비스')>0)&(np.sum(sector_mom[0]=='소프트웨어와서비스')==1):
+    if (np.sum(data['sector']=='소프트웨어와서비스')>0):
         data_소프트웨어와서비스 = data[data['sector']=="소프트웨어와서비스"]
         # per, pbr, div_yield 구할때는 전체 시가총액을 사용,
         # 시총비중 구할떄는 free-float
@@ -1455,7 +1451,7 @@ for n in range(3,68):
         a=a+1
     
      #기술하드웨어와장비 섹터
-    if (np.sum(data['sector']=='기술하드웨어와장비')>0)&(np.sum(sector_mom[0]=='기술하드웨어와장비')==1):
+    if (np.sum(data['sector']=='기술하드웨어와장비')>0):
         data_기술하드웨어와장비 = data[data['sector']=="기술하드웨어와장비"]
         # per, pbr, div_yield 구할때는 전체 시가총액을 사용,
         # 시총비중 구할떄는 free-float
@@ -1511,7 +1507,7 @@ for n in range(3,68):
         a=a+1
     
      #반도체와반도체장비 섹터
-    if (np.sum(data['sector']=='반도체와반도체장비')>0)&(np.sum(sector_mom[0]=='반도체와반도체장비')==1):
+    if (np.sum(data['sector']=='반도체와반도체장비')>0):
         data_반도체와반도체장비 = data[data['sector']=="반도체와반도체장비"]
         # per, pbr, div_yield 구할때는 전체 시가총액을 사용,
         # 시총비중 구할떄는 free-float
@@ -1567,7 +1563,7 @@ for n in range(3,68):
         a=a+1
     
      #전자와 전기제품 섹터
-    if (np.sum(data['sector']=='전자와 전기제품')>0)&(np.sum(sector_mom[0]=='전자와 전기제품')==1):
+    if (np.sum(data['sector']=='전자와 전기제품')>0):
         data_전자와_전기제품 = data[data['sector']=="전자와 전기제품"]
         # per, pbr, div_yield 구할때는 전체 시가총액을 사용,
         # 시총비중 구할떄는 free-float
@@ -1623,7 +1619,7 @@ for n in range(3,68):
         a=a+1
     
      #디스플레이 섹터
-    if (np.sum(data['sector']=='디스플레이')>0)&(np.sum(sector_mom[0]=='디스플레이')==1):
+    if (np.sum(data['sector']=='디스플레이')>0):
         data_디스플레이 = data[data['sector']=="디스플레이"]
         # per, pbr, div_yield 구할때는 전체 시가총액을 사용,
         # 시총비중 구할떄는 free-float
@@ -1679,7 +1675,7 @@ for n in range(3,68):
         a=a+1
     
      #통신서비스 섹터
-    if (np.sum(data['sector']=='통신서비스')>0)&(np.sum(sector_mom[0]=='통신서비스')==1):
+    if (np.sum(data['sector']=='통신서비스')>0):
         data_통신서비스 = data[data['sector']=="통신서비스"]
         # per, pbr, div_yield 구할때는 전체 시가총액을 사용,
         # 시총비중 구할떄는 free-float
@@ -1735,7 +1731,7 @@ for n in range(3,68):
         a=a+1
     
      #유틸리티 섹터
-    if (np.sum(data['sector']=='유틸리티')>0)&(np.sum(sector_mom[0]=='유틸리티')==1):
+    if (np.sum(data['sector']=='유틸리티')>0):
         data_유틸리티 = data[data['sector']=="유틸리티"]
         # per, pbr, div_yield 구할때는 전체 시가총액을 사용,
         # 시총비중 구할떄는 free-float
