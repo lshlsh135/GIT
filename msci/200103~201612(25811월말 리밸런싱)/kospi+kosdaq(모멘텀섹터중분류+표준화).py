@@ -67,6 +67,13 @@ import numpy as np
 #sector_mid_kq.to_pickle('sector_mid_kq')
 #sector_mid_rtn_month = pd.read_excel('wics 중분류 모멘텀 수익률.xlsx',sheetname='월별수익률1',header=None)
 #sector_mid_rtn_month.to_pickle('sector_mid_rtn_month')
+#rtn_month1 = pd.read_excel('msci_rawdata_kospi_25811.xlsm',sheetname='월별수익률1',header=None)
+#rtn_month1.to_pickle('rtn_month1')
+#rtn_month_kq1 = pd.read_excel('msci_rawdata_kosdaq_25811.xlsm',sheetname='월별수익률1',header=None)
+#rtn_month_kq1.to_pickle('rtn_month_kq1')
+
+
+
 
 
 
@@ -144,7 +151,7 @@ for n in range(3,68):
     data_size= len(gross_return)     # Row count
     
     gross_return=gross_return.assign(rnk=np.floor(gross_return[1].rank(method='first',ascending=False))) 
-    sector_mom = gross_return.query('rnk<11')
+    sector_mom = gross_return.query('rnk<17')
         
         
     data_big = raw_data_sum[(raw_data_sum[n] == 1)|(raw_data_sum[n] == 2)|(raw_data_sum[n] == 3)|(raw_data_sum[n] == 'KOSDAQ')]
