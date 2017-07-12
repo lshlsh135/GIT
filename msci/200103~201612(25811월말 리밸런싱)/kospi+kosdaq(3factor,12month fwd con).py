@@ -107,8 +107,8 @@ quarter_data = pd.DataFrame(np.zeros((1000,195)))
 sector_data = pd.DataFrame(np.zeros((1000,130)))
 group_data = pd.DataFrame(np.zeros((1000,130)))
 result_cash = pd.DataFrame(np.zeros((200,16)))
-
-
+turnover_result = pd.DataFrame(np.ones((1,65)))
+#result_for_turnover = pd.DataFrame(np.zeros((200,1)))
 z=0 #연말현금배당수익률을 저장하기 위해 ... 아래 if문있음
 for n in range(3,68):
     #66마지막 분기
@@ -225,7 +225,18 @@ for n in range(3,68):
     result = result.drop_duplicates()
     result = result[result['rnk']<201] 
     
-
+    # 각 종목별 정확한 turnover 계산
+    if n>3:
+        new_stock_count = len(result['return'])
+        result = result.assign(new_weight=1/len(result['return']))
+        result_for_turnover = pd.concat([result_for_turnover,rtn_sum[n-3]],axis=1,join='inner')
+        result_for_turnover = pd.concat([result_for_turnover,result['return'],result['new_weight']],axis=1)
+        result_for_turnover = result_for_turnover.replace([np.nan],0)
+        result_for_turnover = result_for_turnover.assign(before_weight=result_for_turnover.iloc[:,1]/np.sum(result_for_turnover.iloc[:,1]))
+        turnover_result.iloc[:,n-3] = np.sum(np.abs(result_for_turnover['new_weight']-result_for_turnover['before_weight']))
+        result_for_turnover = result_for_turnover.iloc[:,2][result_for_turnover.iloc[:,2]>0]
+    if n==3:
+        result_for_turnover = result['return']
 #    result = pd.concat([result,rtn_sum[n-3]],axis=1,join='inner',ignore_index=True) #수익률 매칭
     
   
@@ -300,14 +311,21 @@ for n in range(3,67):
     data_name.loc[999,n-2]=(len1-len2)/len1
     turnover_quarter=data_name.iloc[999,1:]
     turnover=np.mean(turnover_quarter)
+##################################################################################
+# 옛날방식 - 바뀐 종목 % 를 turnover로 생각
+##turnvoer에 1% 곱해서 거래비용 계산하기
+##첫기에는 거래비용이 100%이다
+#turnover_temp = pd.DataFrame(np.ones((1,1)))
+#turnover_quarter = pd.DataFrame(turnover_quarter).transpose().reset_index(drop=True)
+#turnover_quarter = pd.concat([turnover_temp,turnover_quarter],axis=1)
+#turnover_quarter = turnover_quarter * 0.01
+#return_diff = return_data - np.tile(turnover_quarter,(5,1))
+#return_transaction_cost_final=np.product(return_diff,axis=1)
+#################################################################################
 
-#turnvoer에 2% 곱해서 거래비용 계산하기
-#첫기에는 거래비용이 100%이다
-turnover_temp = pd.DataFrame(np.ones((1,1)))
-turnover_quarter = pd.DataFrame(turnover_quarter).transpose().reset_index(drop=True)
-turnover_quarter = pd.concat([turnover_temp,turnover_quarter],axis=1)
-turnover_quarter = turnover_quarter * 0.01
-return_diff = return_data - np.tile(turnover_quarter,(5,1))
+# 제대로된 turnover
+turnover_result = turnover_result * 0.0015
+return_diff = return_data - np.tile(turnover_result,(5,1))
 return_transaction_cost_final=np.product(return_diff,axis=1)
 
 #승률
