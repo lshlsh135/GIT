@@ -223,22 +223,22 @@ for n in range(3,68):
         
     #중복 rows 1개 빼고 다 제거 
     result = result.drop_duplicates()
-    result = result[result['rnk']<201] 
-    
-    # 각 종목별 정확한 turnover 계산
-    if n>3:
-        new_stock_count = len(result['return'])
-        result = result.assign(new_weight=1/len(result['return']))
-        result_for_turnover = pd.concat([result_for_turnover,rtn_sum[n-3]],axis=1,join='inner')
-        result_for_turnover = pd.concat([result_for_turnover,result['return'],result['new_weight']],axis=1)
-        result_for_turnover = result_for_turnover.replace([np.nan],0)
-        result_for_turnover = result_for_turnover.assign(before_weight=result_for_turnover.iloc[:,1]/np.sum(result_for_turnover.iloc[:,1]))
-        turnover_result.iloc[:,n-3] = np.sum(np.abs(result_for_turnover['new_weight']-result_for_turnover['before_weight']))
-        result_for_turnover = result_for_turnover.iloc[:,2][result_for_turnover.iloc[:,2]>0]
-    if n==3:
-        result_for_turnover = result['return']
+    result = result[result['rnk']<26] 
+####################################################################################
+#    # 각 종목별 정확한 turnover 계산
+#    if n>3:
+#        new_stock_count = len(result['return'])
+#        result = result.assign(new_weight=1/len(result['return']))
+#        result_for_turnover = pd.concat([result_for_turnover,rtn_sum[n-3]],axis=1,join='inner')
+#        result_for_turnover = pd.concat([result_for_turnover,result['return'],result['new_weight']],axis=1)
+#        result_for_turnover = result_for_turnover.replace([np.nan],0)
+#        result_for_turnover = result_for_turnover.assign(before_weight=result_for_turnover.iloc[:,1]/np.sum(result_for_turnover.iloc[:,1]))
+#        turnover_result.iloc[:,n-3] = np.sum(np.abs(result_for_turnover['new_weight']-result_for_turnover['before_weight']))
+#        result_for_turnover = result_for_turnover.iloc[:,2][result_for_turnover.iloc[:,2]>0]
+#    if n==3:
+#        result_for_turnover = result['return']
 #    result = pd.concat([result,rtn_sum[n-3]],axis=1,join='inner',ignore_index=True) #수익률 매칭
-    
+#####################################################################################
   
                        
 #대형주+중형주+소형주+KOSDAQ                       
@@ -313,20 +313,20 @@ for n in range(3,67):
     turnover=np.mean(turnover_quarter)
 ##################################################################################
 # 옛날방식 - 바뀐 종목 % 를 turnover로 생각
-##turnvoer에 1% 곱해서 거래비용 계산하기
-##첫기에는 거래비용이 100%이다
-#turnover_temp = pd.DataFrame(np.ones((1,1)))
-#turnover_quarter = pd.DataFrame(turnover_quarter).transpose().reset_index(drop=True)
-#turnover_quarter = pd.concat([turnover_temp,turnover_quarter],axis=1)
-#turnover_quarter = turnover_quarter * 0.01
-#return_diff = return_data - np.tile(turnover_quarter,(5,1))
-#return_transaction_cost_final=np.product(return_diff,axis=1)
+#turnvoer에 1% 곱해서 거래비용 계산하기
+#첫기에는 거래비용이 100%이다
+turnover_temp = pd.DataFrame(np.ones((1,1)))
+turnover_quarter = pd.DataFrame(turnover_quarter).transpose().reset_index(drop=True)
+turnover_quarter = pd.concat([turnover_temp,turnover_quarter],axis=1)
+turnover_quarter = turnover_quarter * 0.01
+return_diff = return_data - np.tile(turnover_quarter,(5,1))
+return_transaction_cost_final=np.product(return_diff,axis=1)
 #################################################################################
 
 # 제대로된 turnover
-turnover_result = turnover_result * 0.0015
-return_diff = return_data - np.tile(turnover_result,(5,1))
-return_transaction_cost_final=np.product(return_diff,axis=1)
+#turnover_result = turnover_result * 0.0015
+#return_diff = return_data - np.tile(turnover_result,(5,1))
+#return_transaction_cost_final=np.product(return_diff,axis=1)
 
 #승률
 diff = return_data - np.tile(kospi_quarter,(5,1))
@@ -339,7 +339,7 @@ win_rate = diff[column_lengh-1]/column_lengh
 
 #섹터별 비중구하기 마지막
 #초기 기준이 되는 full index 설정
-sector_data_temp = sector_data.set_index([0],drop=False)
+sector_data_temp = sector_data.set_index([128],drop=False)
 #초기값 설정
 sector_data_count = sector_data_temp.iloc[0:10,1]
 sector_data_sum = np.sum(sector_data_count)
@@ -355,7 +355,8 @@ for n in range(1,65):
     
 #그룹별 비중구하기 마지막
 #초기 기준이 되는 full 그룹 설정
-group_data_temp = group_data.set_index([0],drop=False)
+#128 column은 앞쪽에 소형주가 포함이 안되서 후반부로 온거
+group_data_temp = group_data.set_index([128],drop=False)
 #초기값 설정
 group_data_count = group_data_temp.iloc[0:4,1]
 group_data_sum = np.sum(group_data_count)
