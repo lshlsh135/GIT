@@ -339,7 +339,9 @@ win_rate = diff[column_lengh-1]/column_lengh
 
 #섹터별 비중구하기 마지막
 #초기 기준이 되는 full index 설정
-sector_data_temp = sector_data.set_index([128],drop=False)
+sector_data = sector_data.iloc[0:10,:]
+#종목수가 적어지면 ex) 25개  섹터 10개중에서 안걸리는 섹터가 있어서 index 10개를 직접 썻다.
+sector_data_temp = sector_data.set_index([['IT','건강관리','경기관련소비재','금융','산업재','소재','에너지','유틸리티','필수소비재','전기통신서비스']])
 #초기값 설정
 sector_data_count = sector_data_temp.iloc[0:10,1]
 sector_data_sum = np.sum(sector_data_count)
