@@ -223,7 +223,7 @@ for n in range(3,68):
         
     #중복 rows 1개 빼고 다 제거 
     result = result.drop_duplicates()
-    result = result[result['rnk']<26] 
+    result = result[result['rnk']<201] 
 ####################################################################################
 #    # 각 종목별 정확한 turnover 계산
 #    if n>3:
