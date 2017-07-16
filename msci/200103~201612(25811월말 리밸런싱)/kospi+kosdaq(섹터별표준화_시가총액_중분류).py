@@ -145,7 +145,7 @@ for n in range(3,68):
     data = data[data['ni_12fw'].notnull()]
     data = data[data['cash_div'].notnull()]
     
-    for i in range(1,11):
+    for i in range(1,30):
         locals()['result_{}'.format(i)] = pd.DataFrame(np.zeros((200,19)))
 
     
