@@ -5,26 +5,6 @@ Created on Tue Jul 11 11:27:12 2017
 @author: SH-NoteBook
 """
 
-# -*- coding: utf-8 -*-
-"""
-Created on Tue Jul 11 08:40:11 2017
-
-@author: SH-NoteBook
-"""
-
-# -*- coding: utf-8 -*-
-"""
-Created on Tue Jul  4 14:41:51 2017
-
-@author: SH-NoteBook
-"""
-
-# -*- coding: utf-8 -*-
-"""
-Created on Wed Jun 28 10:21:38 2017
-
-@author: SH-NoteBook
-"""
 
 #섹터별로 표준화
 
@@ -1803,7 +1783,7 @@ for n in range(3,68):
 
     #중복 rows 1개 빼고 다 제거 
     result = result.drop_duplicates()
-    result = result[result['rnk']<201] 
+    result = result[result['rnk']<101] 
     
 
 #    result = pd.concat([result,rtn_sum[n-3]],axis=1,join='inner',ignore_index=True) #수익률 매칭
