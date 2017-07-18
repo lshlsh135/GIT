@@ -139,7 +139,7 @@ for n in range(3,68):
     #상폐, 지주사전환, 분할상장 때문에 생기는 수익률 0 제거
     data=data[data['return']!=0]
     result_temp = data
-    samsung = pd.DataFrame(data.loc[390,:]).transpose()
+#    samsung = pd.DataFrame(data.loc[390,:]).transpose()
 
     data = data[data['equity'].notnull()]
     data = data[data['ni_12fw'].notnull()]

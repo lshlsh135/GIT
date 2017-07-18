@@ -1909,8 +1909,8 @@ for n in range(3,68):
 
     #중복 rows 1개 빼고 다 제거 
     result = result.drop_duplicates()
-    result1 = result[result['rnk']<51] 
-    
+    result1 = result[result['rnk']<86] 
+   
     
 #############################################################################
 ## 중소형주 ###
@@ -3691,7 +3691,7 @@ for n in range(3,68):
 
     #중복 rows 1개 빼고 다 제거 
     result = result.drop_duplicates()
-    result2 = result[result['rnk']<51] 
+    result2 = result[result['rnk']<16] 
     
     result = pd.concat([result1,result2])
 
