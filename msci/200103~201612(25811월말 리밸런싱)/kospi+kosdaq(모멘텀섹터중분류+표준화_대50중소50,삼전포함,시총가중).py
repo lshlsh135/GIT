@@ -3552,8 +3552,11 @@ for n in range(3,68):
     
     
     
-    #삼성전자를 시가총액 비중으로 투자, 나머지는 동일가중 투
-    return_data.iloc[0,n-3]=np.sum(result[result['name']!='삼성전자']['return']*rest_weight/(len(result)-1))+result[result['name']=='삼성전자']['return']*samsung_weight
+    #삼성전자를 시가총액 비중으로 투자, 나머지는 동일가중 투자
+    #np.float(result[result['name']=='삼성전자']['return']*samsung_weight) 에서
+    #np.float을 붙여주지 않으면 series에서도 행렬?의 형태로 나와서 index가 맞지 않다고
+    #계산이 안됨...
+    return_data.iloc[0,n-3]=np.sum(result[result['name']!='삼성전자']['return']*rest_weight/(len(result)-1))+np.float(result[result['name']=='삼성전자']['return']*samsung_weight)
 
     #월별 수익률 구하기
     result = result.assign(gross_return_2 = result['return_month1']*result['return_month2'])
