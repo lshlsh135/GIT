@@ -140,7 +140,7 @@ for n in range(3,68):
     #상폐, 지주사전환, 분할상장 때문에 생기는 수익률 0 제거
     data=data[data['return']!=0]
     result_temp = data
-    samsung = pd.DataFrame(data.loc[390,:]).transpose()
+#    samsung = pd.DataFrame(data.loc[390,:]).transpose()
 
     data = data[data['equity'].notnull()]
     data = data[data['ni_12fw'].notnull()]
@@ -1790,7 +1790,7 @@ for n in range(3,68):
 
     #중복 rows 1개 빼고 다 제거 
     result = result.drop_duplicates()
-    result1 = result[result['rnk']<51] 
+    result1 = result[result['rnk']<11] 
     ######################################################################################
     ######################################################################################
     ######################################################################################
@@ -1810,7 +1810,7 @@ for n in range(3,68):
     #상폐, 지주사전환, 분할상장 때문에 생기는 수익률 0 제거
     data=data[data['return']!=0]
     result_temp = data
-    samsung = pd.DataFrame(data.loc[390,:]).transpose()
+#    samsung = pd.DataFrame(data.loc[390,:]).transpose()
 
     data = data[data['equity'].notnull()]
     data = data[data['ni_12fw'].notnull()]
@@ -3460,7 +3460,7 @@ for n in range(3,68):
 
     #중복 rows 1개 빼고 다 제거 
     result = result.drop_duplicates()
-    result2 = result[result['rnk']<51] 
+    result2 = result[result['rnk']<91] 
 
 #    result = pd.concat([result,rtn_sum[n-3]],axis=1,join='inner',ignore_index=True) #수익률 매칭
     result = pd.concat([result1,result2])

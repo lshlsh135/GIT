@@ -151,9 +151,9 @@ for n in range(3,68):
     data_size= len(gross_return)     # Row count
     
     gross_return=gross_return.assign(rnk=np.floor(gross_return[1].rank(method='first',ascending=False))) 
-    sector_mom = gross_return.query('rnk<17')
+    sector_mom = gross_return.query('rnk<16')
         
-        
+    
     data_big = raw_data_sum[(raw_data_sum[n] == 1)|(raw_data_sum[n] == 2)|(raw_data_sum[n] == 3)|(raw_data_sum[n] == 'KOSDAQ')]
     data_big = data_big.loc[:,[1,n]]
     #ni_12m_fw_sum 쓰면 fwd per, 그냥 ni_sum 쓰면 trailing
@@ -164,7 +164,7 @@ for n in range(3,68):
     #상폐, 지주사전환, 분할상장 때문에 생기는 수익률 0 제거
     data=data[data['return']!=0]
     result_temp = data
-    samsung = pd.DataFrame(data.loc[390,:]).transpose()
+#    samsung = pd.DataFrame(data.loc[390,:]).transpose()
 
     data = data[data['equity'].notnull()]
     data = data[data['ni_12fw'].notnull()]
@@ -1814,7 +1814,7 @@ for n in range(3,68):
 
     #중복 rows 1개 빼고 다 제거 
     result = result.drop_duplicates()
-    result = result[result['rnk']<201] 
+    result = result[result['rnk']<101] 
     
 
 #    result = pd.concat([result,rtn_sum[n-3]],axis=1,join='inner',ignore_index=True) #수익률 매칭
