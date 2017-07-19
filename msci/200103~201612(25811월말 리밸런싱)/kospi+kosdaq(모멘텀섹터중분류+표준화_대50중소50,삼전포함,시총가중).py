@@ -1,5 +1,19 @@
 # -*- coding: utf-8 -*-
 """
+Created on Wed Jul 19 16:39:33 2017
+
+@author: SH-NoteBook
+"""
+
+# -*- coding: utf-8 -*-
+"""
+Created on Wed Jul 19 14:51:54 2017
+
+@author: SH-NoteBook
+"""
+
+# -*- coding: utf-8 -*-
+"""
 Created on Wed Jul 19 10:02:09 2017
 
 @author: SH-NoteBook
@@ -150,7 +164,7 @@ for n in range(3,68):
     #상폐, 지주사전환, 분할상장 때문에 생기는 수익률 0 제거
     data=data[data['return']!=0]
     result_temp = data
-#    samsung = pd.DataFrame(data.loc[390,:]).transpose()
+    samsung = pd.DataFrame(data.loc[390,:]).transpose()
 
     data = data[data['equity'].notnull()]
     data = data[data['ni_12fw'].notnull()]
@@ -1797,11 +1811,22 @@ for n in range(3,68):
     result=result.assign(rnk=result['z_score'].rank(method='first',ascending=False)) 
     
 #    result = pd.concat([result,pd.DataFrame(result_temp.loc[390,:]).transpose()],axis=0)
-
-        #중복 rows 1개 빼고 다 제거 
-    result = result.drop_duplicates()
-    result1 = result[result['rnk']<11] 
     
+    #중복 rows 1개 빼고 다 제거 
+    
+    samsung['1/pbr'] = 0
+    samsung['1/per'] = 0
+    samsung['div_yield'] = 0
+    samsung['pbr_z'] = 0
+    samsung['per_z'] = 0
+    samsung['div_z'] = 0
+    samsung['z_score'] = 0
+    samsung['rnk'] = 0
+    result = pd.concat([result,samsung])
+    #이게 위에 있었떠니 삼성전자 두번 들어가는것도... 으..
+    result = result.drop_duplicates()
+    result1 = result[result['rnk']<25]
+
     ############################################################################
     ############################################################################
     ############################################################################
@@ -3471,7 +3496,7 @@ for n in range(3,68):
 
     #중복 rows 1개 빼고 다 제거 
     result = result.drop_duplicates()
-    result2 = result[result['rnk']<91] 
+    result2 = result[result['rnk']<76] 
     
     result = pd.concat([result1,result2])
     
@@ -3502,19 +3527,33 @@ for n in range(3,68):
 #    result = result[result[15]!=0]
     #매 분기 수익률을 기록
     quarter_data[[3*(n-3),3*(n-3)+1,3*(n-3)+2]] = result.iloc[:,[0,1,7]].reset_index(drop=True)
-    market_cap교육서비스al=np.sum(result['size_FIF_wisefn'])
-    result=result.assign(market_weight2=result['size_FIF_wisefn']/market_cap교육서비스al)          
+    market_capital=np.sum(result['size_FIF_wisefn'])
+    result=result.assign(market_weight2=result['size_FIF_wisefn']/market_capital)          
     
     #연말현금배당수익률 저장
-    if (n>4)&((n-4)%4==2):
-        result_cash_temp= pd.concat([result['name'],cash_div_rtn_sum[(n+2)/4-2]],axis=1)
-        result_cash_temp=result_cash_temp[result_cash_temp['name'].notnull()]
-        result_cash[[z,z+1]] = result_cash_temp.iloc[:,[0,1]].reset_index(drop=True)
-        z=z+2
-        
+#    if (n>4)&((n-4)%4==2):
+#        result_cash_temp= pd.concat([result['name'],cash_div_rtn_sum[(n+2)/4-2]],axis=1)
+#        result_cash_temp=result_cash_temp[result_cash_temp['name'].notnull()]
+#        result_cash[[z,z+1]] = result_cash_temp.iloc[:,[0,1]].reset_index(drop=True)
+#        z=z+2
+#        
     
     #동일가중
-    return_data.iloc[0,n-3]=np.mean(result['return'])
+    data_big = raw_data_sum[(raw_data_sum[n] == 2)|(raw_data_sum[n] == 3)|(raw_data_sum[n] == 1)]
+    data_big = data_big.loc[:,[1,n]]
+    samsung_weight = pd.concat([data_big, size_FIF_wisefn_sum[n], equity_sum[n], ni_12m_fw_sum[n],cash_div_sum[n],size_sum[n],rtn_sum[n-3],sector_sum[n],rtn_month_sum[3*(n-3)],rtn_month_sum[3*(n-3)+1],rtn_month_sum[3*(n-3)+2]],axis=1,join='inner',ignore_index=True)
+    samsung_weight.columns = ['name','group','size_FIF_wisefn','equity','ni_12fw','cash_div','size','return','sector','return_month1','return_month2','return_month3']
+    
+    #상폐, 지주사전환, 분할상장 때문에 생기는 수익률 0 제거
+    samsung_weight=samsung_weight[samsung_weight['return']!=0]
+    samsung_weight = samsung_weight.loc[390,'size']/np.sum(samsung_weight['size'])
+    rest_weight = 1 - samsung_weight
+    
+    
+    
+    
+    #삼성전자를 시가총액 비중으로 투자, 나머지는 동일가중 투
+    return_data.iloc[0,n-3]=np.sum(result[result['name']!='삼성전자']['return']*rest_weight/(len(result)-1))+result[result['name']=='삼성전자']['return']*samsung_weight
 
     #월별 수익률 구하기
     result = result.assign(gross_return_2 = result['return_month1']*result['return_month2'])

@@ -1,5 +1,12 @@
 # -*- coding: utf-8 -*-
 """
+Created on Wed Jul 19 14:51:54 2017
+
+@author: SH-NoteBook
+"""
+
+# -*- coding: utf-8 -*-
+"""
 Created on Wed Jul 19 10:02:09 2017
 
 @author: SH-NoteBook
@@ -150,7 +157,7 @@ for n in range(3,68):
     #상폐, 지주사전환, 분할상장 때문에 생기는 수익률 0 제거
     data=data[data['return']!=0]
     result_temp = data
-#    samsung = pd.DataFrame(data.loc[390,:]).transpose()
+    samsung = pd.DataFrame(data.loc[390,:]).transpose()
 
     data = data[data['equity'].notnull()]
     data = data[data['ni_12fw'].notnull()]
@@ -1797,11 +1804,22 @@ for n in range(3,68):
     result=result.assign(rnk=result['z_score'].rank(method='first',ascending=False)) 
     
 #    result = pd.concat([result,pd.DataFrame(result_temp.loc[390,:]).transpose()],axis=0)
-
-        #중복 rows 1개 빼고 다 제거 
-    result = result.drop_duplicates()
-    result1 = result[result['rnk']<11] 
     
+    #중복 rows 1개 빼고 다 제거 
+    
+    samsung['1/pbr'] = 0
+    samsung['1/per'] = 0
+    samsung['div_yield'] = 0
+    samsung['pbr_z'] = 0
+    samsung['per_z'] = 0
+    samsung['div_z'] = 0
+    samsung['z_score'] = 0
+    samsung['rnk'] = 0
+    result = pd.concat([result,samsung])
+    #이게 위에 있었떠니 삼성전자 두번 들어가는것도... 으..
+    result = result.drop_duplicates()
+    result1 = result[result['rnk']<25]
+
     ############################################################################
     ############################################################################
     ############################################################################
@@ -3471,7 +3489,7 @@ for n in range(3,68):
 
     #중복 rows 1개 빼고 다 제거 
     result = result.drop_duplicates()
-    result2 = result[result['rnk']<91] 
+    result2 = result[result['rnk']<76] 
     
     result = pd.concat([result1,result2])
     
@@ -3502,16 +3520,16 @@ for n in range(3,68):
 #    result = result[result[15]!=0]
     #매 분기 수익률을 기록
     quarter_data[[3*(n-3),3*(n-3)+1,3*(n-3)+2]] = result.iloc[:,[0,1,7]].reset_index(drop=True)
-    market_cap교육서비스al=np.sum(result['size_FIF_wisefn'])
-    result=result.assign(market_weight2=result['size_FIF_wisefn']/market_cap교육서비스al)          
+    market_capital=np.sum(result['size_FIF_wisefn'])
+    result=result.assign(market_weight2=result['size_FIF_wisefn']/market_capital)          
     
     #연말현금배당수익률 저장
-    if (n>4)&((n-4)%4==2):
-        result_cash_temp= pd.concat([result['name'],cash_div_rtn_sum[(n+2)/4-2]],axis=1)
-        result_cash_temp=result_cash_temp[result_cash_temp['name'].notnull()]
-        result_cash[[z,z+1]] = result_cash_temp.iloc[:,[0,1]].reset_index(drop=True)
-        z=z+2
-        
+#    if (n>4)&((n-4)%4==2):
+#        result_cash_temp= pd.concat([result['name'],cash_div_rtn_sum[(n+2)/4-2]],axis=1)
+#        result_cash_temp=result_cash_temp[result_cash_temp['name'].notnull()]
+#        result_cash[[z,z+1]] = result_cash_temp.iloc[:,[0,1]].reset_index(drop=True)
+#        z=z+2
+#        
     
     #동일가중
     return_data.iloc[0,n-3]=np.mean(result['return'])
