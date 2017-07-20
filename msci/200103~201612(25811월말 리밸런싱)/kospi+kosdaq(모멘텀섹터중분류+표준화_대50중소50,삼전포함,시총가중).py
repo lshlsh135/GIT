@@ -1822,9 +1822,15 @@ for n in range(3,68):
     samsung['div_z'] = 0
     samsung['z_score'] = 0
     samsung['rnk'] = 0
+    
     result = pd.concat([result,samsung])
     #이게 위에 있었떠니 삼성전자 두번 들어가는것도... 으..
-    result = result.drop_duplicates()
+    #drop_duplicate()에서 subset='name'을 넣으면 name이 같은것들은 사라짐
+    #여기서 default 값은 처음 하나는 살아남는다는것
+    #삼성에서 이상한값에 다 0 을 넣어서 원래 값과 달랐기 때문에 subset 이없으면
+    #제거가 안됬다.
+    #keep='last'로 해야 rnk = 0인게 살아남음.....
+    result = result.drop_duplicates(subset='name', keep='last')
     result1 = result[result['rnk']<25]
 
     ############################################################################
@@ -3556,16 +3562,20 @@ for n in range(3,68):
     #np.float(result[result['name']=='삼성전자']['return']*samsung_weight) 에서
     #np.float을 붙여주지 않으면 series에서도 행렬?의 형태로 나와서 index가 맞지 않다고
     #계산이 안됨...
-    return_data.iloc[0,n-3]=np.sum(result[result['name']!='삼성전자']['return']*rest_weight/(len(result)-1))+np.float(result[result['name']=='삼성전자']['return']*samsung_weight)
+    # 응 아니야 loc[390]으로 해결
+    return_data.iloc[0,n-3]=np.sum(result[result['name']!='삼성전자']['return']*rest_weight/(len(result)-1))+(result[result['name']=='삼성전자']['return']*samsung_weight).loc[390] # 390이 삼성전자 index
 
     #월별 수익률 구하기
     result = result.assign(gross_return_2 = result['return_month1']*result['return_month2'])
+    
     #아래처럼 구하면 누적수익률이 달라짐
 #    return_month_data[[3*(n-3),3*(n-3)+1,3*(n-3)+2]]=pd.DataFrame(np.mean(result[['return_month1','return_month2','return_month3']])).transpose()
     #forward yield같은 느낌으로 구함
-    return_month_data[3*(n-3)] = np.mean(result['return_month1'])
-    return_month_data[3*(n-3)+1] = np.mean(result['gross_return_2'])/return_month_data[3*(n-3)]
-    return_month_data[3*(n-3)+2] = np.mean(result['return'])/np.mean(result['gross_return_2'])
+    
+    #여기도 삼성전자 시가총액, 나머지 동일가중으로 바꿔줘야함
+    return_month_data[3*(n-3)] = np.sum(result[result['name']!='삼성전자']['return_month1']*rest_weight/(len(result)-1))+(result[result['name']=='삼성전자']['return_month1']*samsung_weight).loc[390]
+    return_month_data[3*(n-3)+1] = (np.sum(result[result['name']!='삼성전자']['gross_return_2']*rest_weight/(len(result)-1))+(result[result['name']=='삼성전자']['gross_return_2']*samsung_weight).loc[390])/return_month_data[3*(n-3)].loc[0]  
+    return_month_data[3*(n-3)+2] = (np.sum(result[result['name']!='삼성전자']['return']*rest_weight/(len(result)-1))+(result[result['name']=='삼성전자']['return']*samsung_weight).loc[390])/(np.sum(result[result['name']!='삼성전자']['gross_return_2']*rest_weight/(len(result)-1))+(result[result['name']=='삼성전자']['gross_return_2']*samsung_weight).loc[390])
 
     #시총가중
 #    return_data.iloc[0,n-3]=np.sum(result['return']*result['market_weight2'])
