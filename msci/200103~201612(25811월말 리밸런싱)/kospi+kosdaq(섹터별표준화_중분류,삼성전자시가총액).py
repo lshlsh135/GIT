@@ -1803,7 +1803,7 @@ for n in range(3,68):
     #제거가 안됬다.
     #keep='last'로 해야 rnk = 0인게 살아남음.....
     result = result.drop_duplicates(subset='name', keep='last')
-    result = result[result['rnk']<75]
+    result = result[result['rnk']<25]
     
 
 #    result = pd.concat([result,rtn_sum[n-3]],axis=1,join='inner',ignore_index=True) #수익률 매칭
