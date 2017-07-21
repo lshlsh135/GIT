@@ -205,9 +205,9 @@ for n in range(3,68):
     result = pd.concat([data, data1, data2, data3], axis = 1)
     
     #전체 몇개를 뽑을것인가
-    total_number = 100
+    total_number = 50
     #시가총액 상위 몇개를 기본적으로 깔고 갈것인가
-    size_rank_min = 30
+    size_rank_min = 25
     result1 = result[result['size_rank']<size_rank_min+1]
     result2 = result[result['size_rank']>size_rank_min]
     
