@@ -23,7 +23,7 @@ import numpy as np
 #raw_data_kq.to_pickle('raw_data_kq')
 #rtn_month_kq.to_pickle('rtn_month_kq')
 
-return_data = np.zeros((5,195))
+return_data = np.zeros((5,28))
 return_data = pd.DataFrame(return_data)
 raw_data = pd.read_pickle('raw_data')
 raw_data_kq = pd.read_pickle('raw_data_kq')
@@ -39,13 +39,14 @@ for i in range(1,6):
 
 turnover = pd.DataFrame(np.zeros((5,1)))
 
-for n in range(3,198):
+for n in range(3,31):
     
+    formation_month = 36   #직전1개월 제외하고 포트폴리오 구성하는데 쓰일 개월 수
     data_big = raw_data_sum[(raw_data_sum[n] == 1)|(raw_data_sum[n] == 2)|(raw_data_sum[n]==3)|(raw_data_sum[n]=='KOSDAQ')]
     data_big = data_big.loc[:,[1,n]]
-    data = pd.concat([data_big,rtn_month_sum.loc[:,n-3:n+7]],axis=1,join='inner',ignore_index=True)
-    temp_return=data.loc[:,0:12]
-    for k in range(3,13):
+    data = pd.concat([data_big,rtn_month_sum.loc[:,6*(n-3)+2:6*(n-3)+formation_month+1]],axis=1,join='inner',ignore_index=True)
+    temp_return=data.loc[:,0:37]
+    for k in range(3,38):
         temp_return[2]=temp_return[2]*temp_return[k]
         
     gross_return=temp_return[[0,2]]
@@ -60,11 +61,19 @@ for n in range(3,198):
     data_4=gross_return.query('2>rnk>0')   # 1
     data_5=gross_return.query('1>rnk>-1')  # 0
     
-    data_1=pd.concat([data_1,rtn_month_sum[n+9]],axis=1,join='inner',ignore_index=True)    # 각각 수익률 매칭
-    data_2=pd.concat([data_2,rtn_month_sum[n+9]],axis=1,join='inner',ignore_index=True)
-    data_3=pd.concat([data_3,rtn_month_sum[n+9]],axis=1,join='inner',ignore_index=True)
-    data_4=pd.concat([data_4,rtn_month_sum[n+9]],axis=1,join='inner',ignore_index=True)
-    data_5=pd.concat([data_5,rtn_month_sum[n+9]],axis=1,join='inner',ignore_index=True)
+    data_1=pd.concat([data_1,rtn_month_sum.loc[:,6*(n-3)+formation_month+3:6*(n-3)+formation_month+8]],axis=1,join='inner',ignore_index=True)    # 각각 수익률 매칭
+    data_2=pd.concat([data_2,rtn_month_sum.loc[:,6*(n-3)+formation_month+3:6*(n-3)+formation_month+8]],axis=1,join='inner',ignore_index=True)
+    data_3=pd.concat([data_3,rtn_month_sum.loc[:,6*(n-3)+formation_month+3:6*(n-3)+formation_month+8]],axis=1,join='inner',ignore_index=True)
+    data_4=pd.concat([data_4,rtn_month_sum.loc[:,6*(n-3)+formation_month+3:6*(n-3)+formation_month+8]],axis=1,join='inner',ignore_index=True)
+    data_5=pd.concat([data_5,rtn_month_sum.loc[:,6*(n-3)+formation_month+3:6*(n-3)+formation_month+8]],axis=1,join='inner',ignore_index=True)
+    
+    for k in range(4,9):
+        data_1[3]=data_1[3]*temp_return[k]
+        data_2[3]=data_2[3]*temp_return[k]
+        data_3[3]=data_3[3]*temp_return[k]
+        data_4[3]=data_4[3]*temp_return[k]
+        data_5[3]=data_5[3]*temp_return[k]
+    
     
     data_1=data_1[data_1[3].notnull()]
     data_2=data_2[data_2[3].notnull()]
