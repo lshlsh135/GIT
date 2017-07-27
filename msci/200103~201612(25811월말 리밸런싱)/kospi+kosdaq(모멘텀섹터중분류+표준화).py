@@ -5,20 +5,6 @@ Created on Tue Jul 11 08:40:11 2017
 @author: SH-NoteBook
 """
 
-# -*- coding: utf-8 -*-
-"""
-Created on Tue Jul  4 14:41:51 2017
-
-@author: SH-NoteBook
-"""
-
-# -*- coding: utf-8 -*-
-"""
-Created on Wed Jun 28 10:21:38 2017
-
-@author: SH-NoteBook
-"""
-
 #섹터별로 표준화
 
 #200103~201703 2 5 8 11 월 말 리밸런싱
@@ -1814,7 +1800,7 @@ for n in range(3,68):
 
     #중복 rows 1개 빼고 다 제거 
     result = result.drop_duplicates()
-    result = result[result['rnk']<101] 
+    result = result[result['rnk']<10] 
     
 
 #    result = pd.concat([result,rtn_sum[n-3]],axis=1,join='inner',ignore_index=True) #수익률 매칭
@@ -1930,7 +1916,8 @@ for n in range(1,65):
     
 #그룹별 비중구하기 마지막
 #초기 기준이 되는 full 그룹 설정
-group_data_temp = group_data.set_index([0],drop=False)
+group_data = group_data.iloc[0:4,:]
+group_data_temp = group_data.set_index([['1','2','3','KOSDAQ']])
 #초기값 설정
 group_data_count = group_data_temp.iloc[0:4,1]
 group_data_sum = np.sum(group_data_count)
