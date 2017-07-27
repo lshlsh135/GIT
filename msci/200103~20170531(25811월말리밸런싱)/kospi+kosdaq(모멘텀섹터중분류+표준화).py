@@ -1,5 +1,12 @@
 # -*- coding: utf-8 -*-
 """
+Created on Thu Jul 27 14:56:40 2017
+
+@author: SH-NoteBook
+"""
+
+# -*- coding: utf-8 -*-
+"""
 Created on Tue Jul 11 08:40:11 2017
 
 @author: SH-NoteBook
@@ -18,24 +25,40 @@ Created on Tue Jul 11 08:40:11 2017
 import pandas as pd
 import numpy as np
 
+#raw_data.to_pickle('raw_data')
 #raw_data_kq.to_pickle('raw_data_kq')
+#size.to_pickle('size')
 #size_kq.to_pickle('size_kq')
+#ni.to_pickle('ni')
 #ni_kq.to_pickle('ni_kq')
+#rtn.to_pickle('rtn')
 #rtn_kq.to_pickle('rtn_kq')
+#equity.to_pickle('equity')
 #equity_kq.to_pickle('equity_kq')
+#cash_div.to_pickle('cash_div')
 #cash_div_kq.to_pickle('cash_div_kq')
+#size_FIF_wisefn.to_pickle('size_FIF_wisefn')
 #size_FIF_wisefn_kq.to_pickle('size_FIF_wisefn_kq')
+#ni_12m_fw.to_pickle('ni_12m_fw')
 #ni_12m_fw_kq.to_pickle('ni_12m_fw_kq')
-#raw_data_=pd.read_excel('exercise_v02.xlsx',sheetname='Raw_data1',header=None)
-#raw_data_kq=pd.read_excel('msci_rawdata_kq2.xlsm',sheetname='Raw_data_kq1',header=None)  # 편입시장
-#size_kq = pd.read_excel('msci_rawdata_kq2.xlsm',sheetname='시가총액1',header=None)  #시가총액
-#ni_kq = pd.read_excel('msci_rawdata_kq2.xlsm',sheetname='당기순이익MAIN1',header=None)  # 당기순이익
-#ni_12m_fw_kq = pd.read_excel('msci_rawdata_kq2.xlsm',sheetname='월별당기순이익CON1',header=None)  # 당기순이익
-#rtn_kq = pd.read_excel('msci_rawdata_kq2.xlsm',sheetname='수익률1',header=None)  #수익률
-#equity_kq = pd.read_excel('msci_rawdata_kq2.xlsm',sheetname='자본총계1',header=None)  #자본총걔
-#size_FIF_wisefn_kq = pd.read_excel('msci_rawdata_kosdaq_25811.xlsm',sheetname='유통주식수x수정주가1',header=None)  #free floating 시가총액
-#cash_div_kq = pd.read_excel('msci_rawdata_kq2.xlsm',sheetname='현금배당액1',header=None)
-#sector_kq = pd.read_excel('msci_rawdata_kosdaq_25811.xlsm',sheetname='업종1',header=None)
+#raw_data=pd.read_excel('msci_rawdata_kospi_20170531_25811.xlsm',sheetname='Raw_data1',header=None)
+#raw_data_kq=pd.read_excel('msci_rawdata_kosdaq_20170531_25811.xlsm',sheetname='Raw_data_kq1',header=None)  # 편입시장
+#size = pd.read_excel('msci_rawdata_kospi_20170531_25811.xlsm',sheetname='시가총액1',header=None)  #시가총액
+#size_kq = pd.read_excel('msci_rawdata_kosdaq_20170531_25811.xlsm',sheetname='시가총액1',header=None)
+#ni = pd.read_excel('msci_rawdata_kospi_20170531_25811.xlsm',sheetname='당기순이익MAIN1',header=None)  # 당기순이익
+#ni_kq = pd.read_excel('msci_rawdata_kosdaq_20170531_25811.xlsm',sheetname='당기순이익MAIN1',header=None)  # 당기순이익
+#ni_12m_fw = pd.read_excel('msci_rawdata_kospi_20170531_25811.xlsm',sheetname='월별당기순이익CON1',header=None)  # 당기순이익 컨센서스
+#ni_12m_fw_kq = pd.read_excel('msci_rawdata_kosdaq_20170531_25811.xlsm',sheetname='월별당기순이익CON1',header=None)  # 당기순이익 컨센서스
+#rtn = pd.read_excel('msci_rawdata_kospi_20170531_25811.xlsm',sheetname='수익률1',header=None)  #수익률
+#rtn_kq = pd.read_excel('msci_rawdata_kosdaq_20170531_25811.xlsm',sheetname='수익률1',header=None)  #수익률
+#equity = pd.read_excel('msci_rawdata_kospi_20170531_25811.xlsm',sheetname='자본총계1',header=None)  #자본총계
+#equity_kq = pd.read_excel('msci_rawdata_kosdaq_20170531_25811.xlsm',sheetname='자본총계1',header=None)  #자본총계
+#size_FIF_wisefn = pd.read_excel('msci_rawdata_kospi_20170531_25811.xlsm',sheetname='유통주식수x수정주가1',header=None)  #free floating 시가총액
+#size_FIF_wisefn_kq = pd.read_excel('msci_rawdata_kosdaq_20170531_25811.xlsm',sheetname='유통주식수x수정주가1',header=None)  #free floating 시가총액
+#cash_div = pd.read_excel('msci_rawdata_kospi_20170531_25811.xlsm',sheetname='현금배당액1',header=None)
+#cash_div_kq = pd.read_excel('msci_rawdata_kosdaq_20170531_25811.xlsm',sheetname='현금배당액1',header=None)
+#sector = pd.read_excel('msci_rawdata_kospi_20170531_25811.xlsm',sheetname='업종1',header=None)
+#sector_kq = pd.read_excel('msci_rawdata_kosdaq_20170531_25811.xlsm',sheetname='업종1',header=None)
 #sector_kq.to_pickle('sector_kq')
 #return_dividend_kq = pd.read_excel('msci_rawdata_kosdaq_25811.xlsm',sheetname='3개월전대비수익률(배당금포함)1',header=None)
 #return_dividend_kq.to_pickle('return_dividend_kq')
@@ -47,10 +70,10 @@ import numpy as np
 #rtn_month.to_pickle('rtn_month')
 #rtn_month_kq = pd.read_excel('msci_rawdata_kosdaq_25811.xlsm',sheetname='월별수익률1',header=None)
 #rtn_month_kq.to_pickle('rtn_month_kq')
-#sector_mid = pd.read_excel('msci_rawdata_kospi_25811.xlsm',sheetname='섹터중분류1',header=None)
-#sector_mid.to_pickle('sector_mid')
-#sector_mid_kq = pd.read_excel('msci_rawdata_kosdaq_25811.xlsm',sheetname='섹터중분류1',header=None)
-#sector_mid_kq.to_pickle('sector_mid_kq')
+sector_mid = pd.read_excel('msci_rawdata_kospi_25811.xlsm',sheetname='섹터중분류1',header=None)
+sector_mid.to_pickle('sector_mid')
+sector_mid_kq = pd.read_excel('msci_rawdata_kosdaq_25811.xlsm',sheetname='섹터중분류1',header=None)
+sector_mid_kq.to_pickle('sector_mid_kq')
 #sector_mid_rtn_month = pd.read_excel('wics 중분류 모멘텀 수익률.xlsx',sheetname='월별수익률1',header=None)
 #sector_mid_rtn_month.to_pickle('sector_mid_rtn_month')
 #rtn_month1 = pd.read_excel('msci_rawdata_kospi_25811.xlsm',sheetname='월별수익률1',header=None)
@@ -63,7 +86,7 @@ import numpy as np
 
 
 
-kospi_quarter = pd.read_pickle('kospi_quarter')
+#kospi_quarter = pd.read_pickle('kospi_quarter')
 raw_data = pd.read_pickle('raw_data')
 size = pd.read_pickle('size')  #시가총액
 ni = pd.read_pickle('ni') # 당기순이익
@@ -109,22 +132,22 @@ rtn_month_sum = pd.concat([rtn_month,rtn_month_kq],axis=0,ignore_index=True)
 #size_FIF_wisefn.to_pickle('size_FIF_wisefn')
 
 turnover = pd.DataFrame(np.zeros((1,1)))
-portfolio_cash_rtn = pd.DataFrame(np.zeros((1,16)))
-return_data = np.zeros((5,65))
+#portfolio_cash_rtn = pd.DataFrame(np.zeros((1,16)))
+return_data = np.zeros((5,66))
 return_data = pd.DataFrame(return_data)
-return_month_data = pd.DataFrame(np.zeros((1,195)))
-data_name=pd.DataFrame(np.zeros((1000,65)))
-kosdaq_count = pd.DataFrame(np.zeros((1,65)))
+return_month_data = pd.DataFrame(np.zeros((1,198)))
+data_name=pd.DataFrame(np.zeros((1000,66)))
+kosdaq_count = pd.DataFrame(np.zeros((1,66)))
 # 매 분기 수익률을 기록하기 위해 quarter_data를 만듬
-quarter_data = pd.DataFrame(np.zeros((1000,195)))
-sector_data = pd.DataFrame(np.zeros((1000,130)))
-group_data = pd.DataFrame(np.zeros((1000,130)))
-result_cash = pd.DataFrame(np.zeros((200,16)))
+quarter_data = pd.DataFrame(np.zeros((1000,198)))
+sector_data = pd.DataFrame(np.zeros((1000,132)))
+group_data = pd.DataFrame(np.zeros((1000,132)))
+#result_cash = pd.DataFrame(np.zeros((200,16)))
 #섹터 월별수익률
 #sector_rtn_month = pd.read_pickle('sector_rtn_month')
 sector_mid_rtn_month = pd.read_pickle('sector_mid_rtn_month')
 z=0 #연말현금배당수익률을 저장하기 위해 ... 아래 if문있음
-for n in range(3,68):
+for n in range(3,69):
     #66마지막 분기
     name = sector_mid_rtn_month.loc[:,0]
     sector_mom_data = pd.concat([name,sector_mid_rtn_month.loc[:,3*(n-2)-2:3*(n-2)+8]],axis=1,join='inner',ignore_index=True)    
@@ -1830,12 +1853,12 @@ for n in range(3,68):
     result=result.assign(market_weight2=result['size_FIF_wisefn']/market_cap교육서비스al)          
     
     #연말현금배당수익률 저장
-    if (n>4)&((n-4)%4==2):
-        result_cash_temp= pd.concat([result['name'],cash_div_rtn_sum[(n+2)/4-2]],axis=1)
-        result_cash_temp=result_cash_temp[result_cash_temp['name'].notnull()]
-        result_cash[[z,z+1]] = result_cash_temp.iloc[:,[0,1]].reset_index(drop=True)
-        z=z+2
-        
+#    if (n>4)&((n-4)%4==2):
+#        result_cash_temp= pd.concat([result['name'],cash_div_rtn_sum[(n+2)/4-2]],axis=1)
+#        result_cash_temp=result_cash_temp[result_cash_temp['name'].notnull()]
+#        result_cash[[z,z+1]] = result_cash_temp.iloc[:,[0,1]].reset_index(drop=True)
+#        z=z+2
+#        
     
     #동일가중
     return_data.iloc[0,n-3]=np.mean(result['return'])
@@ -1857,7 +1880,7 @@ for n in range(3,68):
     sector_data[[2*(n-3),2*(n-3)+1]]=result.groupby('sector').size().reset_index(drop=False)
     group_data[[2*(n-3),2*(n-3)+1]]=result.groupby('group').size().reset_index(drop=False)
 #    return_data.iloc[0,n-3]=np.sum(result[13]*result[14])    
-    if n == 67 : 
+    if n == 68 : 
         pass
     return_final=np.product(return_data,axis=1)
 
@@ -1868,7 +1891,7 @@ average_return = np.mean(return_data,axis=1)
 std_return = np.std(return_data,axis=1)
 average_return/std_return
 #turnover
-for n in range(3,67):
+for n in range(3,68):
     
     len1 = len(data_name[data_name[n-2].notnull()])
     aaa=data_name.loc[:,[n-3,n-2]]
@@ -1888,12 +1911,12 @@ return_diff = return_data - np.tile(turnover_quarter,(5,1))
 return_transaction_cost_final=np.product(return_diff,axis=1)
 
 #승률
-diff = return_data - np.tile(kospi_quarter,(5,1))
-column_lengh = len(diff.columns)
-diff = diff>0
-#true == 1 , False == 0 으로 판단하기 때문에 다 더하면 가장 끝 column에 0보다 큰 것들 갯수가 남음
-diff = diff.cumsum(axis=1)
-win_rate = diff[column_lengh-1]/column_lengh
+#diff = return_data - np.tile(kospi_quarter,(5,1))
+#column_lengh = len(diff.columns)
+#diff = diff>0
+##true == 1 , False == 0 으로 판단하기 때문에 다 더하면 가장 끝 column에 0보다 큰 것들 갯수가 남음
+#diff = diff.cumsum(axis=1)
+#win_rate = diff[column_lengh-1]/column_lengh
 
 
 #섹터별 비중구하기 마지막
@@ -1907,7 +1930,7 @@ sector_data_sum = np.sum(sector_data_count)
 sector_data_count = sector_data_count/sector_data_sum
 
 #sector 저장
-for n in range(1,65):
+for n in range(1,66):
     sector_data_temp = sector_data.set_index([2*(n)],drop=False)
     sector_row_lengh = len(sector_data[2*n][sector_data[2*n].notnull()])
     sector_data_count = pd.concat([sector_data_count,sector_data_temp.iloc[0:sector_row_lengh,2*(n)+1]],axis=1)
@@ -1924,7 +1947,7 @@ group_data_sum = np.sum(group_data_count)
 group_data_count = group_data_count/group_data_sum
 
 #group 저장
-for n in range(1,65):
+for n in range(1,66):
     group_data_temp = group_data.set_index([2*(n)],drop=False)
     group_row_lengh = len(group_data[2*n][group_data[2*n].notnull()])
     group_data_count = pd.concat([group_data_count,group_data_temp.iloc[0:group_row_lengh,2*(n)+1]],axis=1)
@@ -1934,6 +1957,6 @@ for n in range(1,65):
         
 
 #포트폴리오 연말현금배당수익률 : 한글과 숫자 columns 다 있어도 np.sum 하면 숫자만 알아서 됨
-for i in range(0,16):
-    portfolio_cash_rtn[i] =   np.sum(result_cash[2*i+1])/len(result_cash[2*i+1][result_cash[2*i+1].notnull()])
+#for i in range(0,16):
+#    portfolio_cash_rtn[i] =   np.sum(result_cash[2*i+1])/len(result_cash[2*i+1][result_cash[2*i+1].notnull()])
 
