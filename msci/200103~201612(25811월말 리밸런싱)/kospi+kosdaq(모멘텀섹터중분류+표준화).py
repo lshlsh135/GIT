@@ -1886,7 +1886,10 @@ turnover_quarter = pd.concat([turnover_temp,turnover_quarter],axis=1)
 turnover_quarter = turnover_quarter * 0.01
 return_diff = return_data - np.tile(turnover_quarter,(5,1))
 return_transaction_cost_final=np.product(return_diff,axis=1)
-
+#monthly data에도 cost 반영
+return_month_data_costed = return_month_data
+for n in range(0,65):
+    return_month_data_costed.loc[:,3*n+1] = return_month_data.loc[:,3*n+1] - turnover_quarter.loc[:,n]
 #승률
 diff = return_data - np.tile(kospi_quarter,(5,1))
 column_lengh = len(diff.columns)
