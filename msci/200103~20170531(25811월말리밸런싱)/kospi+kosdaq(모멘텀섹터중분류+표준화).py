@@ -66,14 +66,14 @@ import numpy as np
 #cash_div_rtn.to_pickle('cash_div_rtn')
 #cash_div_rtn_kq = pd.read_excel('msci_rawdata_kosdaq_25811.xlsm',sheetname='연말현금배당수익률1',header=None)
 #cash_div_rtn_kq.to_pickle('cash_div_rtn_kq')
-#rtn_month = pd.read_excel('msci_rawdata_kospi_25811.xlsm',sheetname='월별수익률1',header=None)
+#rtn_month = pd.read_excel('msci_rawdata_kospi_20170531_25811.xlsm',sheetname='월별수익률1',header=None)
 #rtn_month.to_pickle('rtn_month')
-#rtn_month_kq = pd.read_excel('msci_rawdata_kosdaq_25811.xlsm',sheetname='월별수익률1',header=None)
+#rtn_month_kq = pd.read_excel('msci_rawdata_kosdaq_20170531_25811.xlsm',sheetname='월별수익률1',header=None)
 #rtn_month_kq.to_pickle('rtn_month_kq')
-sector_mid = pd.read_excel('msci_rawdata_kospi_25811.xlsm',sheetname='섹터중분류1',header=None)
-sector_mid.to_pickle('sector_mid')
-sector_mid_kq = pd.read_excel('msci_rawdata_kosdaq_25811.xlsm',sheetname='섹터중분류1',header=None)
-sector_mid_kq.to_pickle('sector_mid_kq')
+#sector_mid = pd.read_excel('msci_rawdata_kospi_20170531_25811.xlsm',sheetname='섹터중분류1',header=None)
+#sector_mid.to_pickle('sector_mid')
+#sector_mid_kq = pd.read_excel('msci_rawdata_kosdaq_20170531_25811.xlsm',sheetname='섹터중분류1',header=None)
+#sector_mid_kq.to_pickle('sector_mid_kq')
 #sector_mid_rtn_month = pd.read_excel('wics 중분류 모멘텀 수익률.xlsx',sheetname='월별수익률1',header=None)
 #sector_mid_rtn_month.to_pickle('sector_mid_rtn_month')
 #rtn_month1 = pd.read_excel('msci_rawdata_kospi_25811.xlsm',sheetname='월별수익률1',header=None)
@@ -96,8 +96,8 @@ equity = pd.read_pickle('equity') #자본총계
 cash_div = pd.read_pickle('cash_div')
 size_FIF_wisefn=pd.read_pickle('size_FIF_wisefn') #시가총액
 sector=pd.read_pickle('sector_mid')   #중분류
-return_dividend = pd.read_pickle('return_dividend') #배당고려수익률
-cash_div_rtn = pd.read_pickle('cash_div_rtn') #연말현금배당수익률
+#return_dividend = pd.read_pickle('return_dividend') #배당고려수익률
+#cash_div_rtn = pd.read_pickle('cash_div_rtn') #연말현금배당수익률
 rtn_month = pd.read_pickle('rtn_month') #월별수익률
 
 raw_data_kq = pd.read_pickle('raw_data_kq')
@@ -109,8 +109,8 @@ equity_kq = pd.read_pickle('equity_kq') #자본총계
 cash_div_kq = pd.read_pickle('cash_div_kq')
 size_FIF_wisefn_kq=pd.read_pickle('size_FIF_wisefn_kq') #시가총액
 sector_kq=pd.read_pickle('sector_mid_kq') #시가총액
-return_dividend_kq = pd.read_pickle('return_dividend_kq')
-cash_div_rtn_kq = pd.read_pickle('cash_div_rtn_kq') #연말현금배당수익률
+#return_dividend_kq = pd.read_pickle('return_dividend_kq')
+#cash_div_rtn_kq = pd.read_pickle('cash_div_rtn_kq') #연말현금배당수익률
 rtn_month_kq = pd.read_pickle('rtn_month_kq') #월별수익률
 
 #소형주 + KOSDAQ 하기 위해 새로운 rawdata 생성(primary key 때문에)                   
@@ -123,8 +123,8 @@ equity_sum=pd.concat([equity,equity_kq],axis=0,ignore_index=True)
 size_FIF_wisefn_sum=pd.concat([size_FIF_wisefn,size_FIF_wisefn_kq],axis=0,ignore_index=True)
 cash_div_sum=pd.concat([cash_div,cash_div_kq],axis=0,ignore_index=True)
 sector_sum=pd.concat([sector,sector_kq],axis=0,ignore_index=True)
-return_dividend_sum = pd.concat([return_dividend,return_dividend_kq],axis=0,ignore_index=True)
-cash_div_rtn_sum = pd.concat([cash_div_rtn,cash_div_rtn_kq],axis=0,ignore_index=True)
+#return_dividend_sum = pd.concat([return_dividend,return_dividend_kq],axis=0,ignore_index=True)
+#cash_div_rtn_sum = pd.concat([cash_div_rtn,cash_div_rtn_kq],axis=0,ignore_index=True)
 rtn_month_sum = pd.concat([rtn_month,rtn_month_kq],axis=0,ignore_index=True)
 #size_FIF=pd.read_pickle('size_FIF')  #자기주식 제외 시가총액
 #size_FIF_insider=pd.read_pickle('size_FIF_insider') #자기주식, 최대주주 주식 제외 시가총
