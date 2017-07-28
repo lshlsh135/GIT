@@ -1800,7 +1800,7 @@ for n in range(3,68):
 
     #중복 rows 1개 빼고 다 제거 
     result = result.drop_duplicates()
-    result = result[result['rnk']<26] 
+    result = result[result['rnk']<21] 
     
 
 #    result = pd.concat([result,rtn_sum[n-3]],axis=1,join='inner',ignore_index=True) #수익률 매칭
@@ -1887,9 +1887,16 @@ turnover_quarter = turnover_quarter * 0.01
 return_diff = return_data - np.tile(turnover_quarter,(5,1))
 return_transaction_cost_final=np.product(return_diff,axis=1)
 #monthly data에도 cost 반영
-return_month_data_costed = return_month_data
+import copy   # 엠창 존나 어려운거발견함 장족의 발전이다
+#deep copy랑 swallow copy 가 있는데  a=[1,2,3]을 만들면 a에 [1,2,3]이 저장되는게 아니라
+#[1,2,3]이라는 객체가 생성되고 여기에 a 가 할당됨. 그런데 여기다 a=b 를 해버리면 b도 
+# 저 객체에 할당되어버려서, b를변경하든 a를 변경하든 같이 바뀜. 
+#deep copy를 하면 새로운 객체가 생김.
+return_month_data_costed = copy.deepcopy(return_month_data)
+
 for n in range(0,65):
-    return_month_data_costed.loc[:,3*n+1] = return_month_data.loc[:,3*n+1] - turnover_quarter.loc[:,n]
+    return_month_data_costed[3*n+1] = np.subtract(return_month_data[3*n+1],turnover_quarter[n])
+
 #승률
 diff = return_data - np.tile(kospi_quarter,(5,1))
 column_lengh = len(diff.columns)
