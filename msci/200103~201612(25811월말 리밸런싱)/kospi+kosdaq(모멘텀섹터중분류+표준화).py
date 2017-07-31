@@ -1800,7 +1800,7 @@ for n in range(3,68):
 
     #중복 rows 1개 빼고 다 제거 
     result = result.drop_duplicates()
-    result = result[result['rnk']<21] 
+    result = result[result['rnk']<26] 
     
 
 #    result = pd.concat([result,rtn_sum[n-3]],axis=1,join='inner',ignore_index=True) #수익률 매칭
