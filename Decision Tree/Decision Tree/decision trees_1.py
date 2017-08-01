@@ -2,11 +2,15 @@
 """
 Created on Mon Jul 31 16:34:48 2017
 
-https://datascienceschool.net/view-notebook/16c28c8c192147bfb3d4059474209e0a/
+http://chrisstrelioff.ws/sandbox/2015/06/08/decision_trees_in_python_with_scikit_learn_and_pandas.html#decision-trees-1
 
 
 @author: SH-NoteBook
 """
+# =============================================================================
+# dt.dot가 안열려서 고민했는데 gvedit.exe를 키고 직접 열면 열린다.
+# =============================================================================
+
 from __future__ import print_function
 
 import os
