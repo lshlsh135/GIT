@@ -24,7 +24,7 @@ from sklearn.grid_search import GridSearchCV
 from sklearn.grid_search import RandomizedSearchCV
 from sklearn.cross_validation import  cross_val_score
 
-ef get_code(tree, feature_names, target_names,
+def get_code(tree, feature_names, target_names,
              spacer_base="    "):
     """Produce pseudo-code for decision tree.
 
