@@ -13,8 +13,8 @@ from sqlalchemy import create_engine
 
 
 engine = create_engine('mysql+mysqlconnector://root:22tkdgns@@@localhost/test')
-sql = 'select * from home_ex' 
+sql = 'select * from kospi_ex' 
 #table에 있는 data를 pandas dataframe type으로 바꾸는 함수 : pd.read_sql
 #그런데 여기서도 sqlalchemy의 engine이 쓰임 ;;
-home_ex = pd.read_sql(sql,engine)
+kospi_ex = pd.read_sql(sql,engine)
 ni=dg_csv_home.loc[:,['date','name','ni']]
