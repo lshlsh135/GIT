@@ -29,7 +29,8 @@ from sqlalchemy import create_engine
 engine = create_engine('mysql+mysqlconnector://root:22tkdgns@@@localhost/test')
 # csv를 읽어올때 한글이 primary key라면 encoding = 'cp949'를 넣어줘야함 ㅎㅎㅎㅎ
 csv_data = pd.read_csv('mysql_samsung.csv',encoding='CP949')   
-csv_data.to_sql('samsung',engine, if_exists = 'replace')
+csv_data.to_sql('samsung1',engine, if_exists = 'replace')
+
 
 #==============================================================================
 # csv - > table 만든거를 다시 pandas dataFrame으로, 다시 Table로 가능
@@ -40,7 +41,7 @@ from sqlalchemy import create_engine
 
 
 engine = create_engine('mysql+mysqlconnector://root:22tkdgns@@@localhost/test')
-sql = 'select * from raw_data' 
+sql = 'select * from samsung1' 
 #table에 있는 data를 pandas dataframe type으로 바꾸는 함수 : pd.read_sql
 #그런데 여기서도 sqlalchemy의 engine이 쓰임 ;;
 samsung1 = pd.read_sql(sql,engine)
