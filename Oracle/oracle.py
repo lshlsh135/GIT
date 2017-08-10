@@ -14,7 +14,13 @@ connection = cx_Oracle.connect("lshlsh135","2tkdgns2",cx0)
 
 
 #DATA를 가져온다!!
-df_ora = pd.read_sql("""select * from kospi_ex""",con=connection)
+kospi = pd.read_sql("""select * from kospi_ex""",con=connection)
+kosdaq = pd.read_sql("""select * from kosdaq_ex""",con=connection)
+rebalancing_date = pd.read_sql("""select * from rebalancing_date""",con=connection)
 
-df_ora=df_ora[df_ora['CO_NM']=='삼성전자']
-df_ora['per'] = df_ora['NI']/df_ora['MARKET_CAP']
+raw_data = pd.concat([kospi,kosdaq],axis=0,ignore_index=True)
+
+raw_data['1/PER'] = raw_data['NI']/raw_data['MARKET_CAP'] 
+aa= raw_data.iloc[0:1000,:]
+
+bb = raw_data[raw_data['TRD_DATE']=='2007-03-30']
